@@ -31,6 +31,7 @@ An array that contains the available tiles (could also be a sub-array of deck. M
 
 #### Function
 A render function to make the game state display. It will need to inteliigently determine player turn and display the appropriate board
+
 An init function that takes player input and then creates the deck, determines first player and calls render
 
 A turn/click function that calls all the helper functions for completing a turn and then render
