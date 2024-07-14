@@ -39,6 +39,7 @@ A turn/click function that calls all the helper functions for completing a turn 
 A helper function for tile selection. It will need to update the tile display array to contain player order
 
 A helper function for tile placement. It will need to understand how the dynamic board size works as well as placement rules
+
 Some kind of gamestate check that checks remaining tiles for the end game state and behaves accordingly
 
 A score calculator that includes logic for points and calculates the final scores for each player
@@ -50,4 +51,5 @@ A click (accessibility? how do I make it work with keyboard. Need to investigate
 
 #### Cached elements
 All the tiles will need to be cached or perhaps the tile display itself
+
 Need to cache the board as well
