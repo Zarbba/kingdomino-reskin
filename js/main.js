@@ -187,7 +187,7 @@ const tileSelector = [
 ]
 
 const gameState = {
-    turn: 0,
+    round: 0,
     playerCount: 4,
     isEndGame: false,
 }
@@ -198,6 +198,7 @@ let message = ``
 // -----Functions-----
 function init() {
     makeDeck()
+    gameState.round = 1
     render()
 }
 
@@ -213,12 +214,26 @@ function shuffleDeck() {
     }
 }
 
+function endRound() {
+    updateTileSelector()
+    updateDeck()
+    gameState.round ++
+}
+
 function updateTileSelector() {
     tileSelector[1] = tileSelector[0]
+    tileSelector[0] = []
     tileSelector[0].push(deck[0], deck[1], deck[2], deck[3])
 }
+
+function updateDeck() {
+    deck.splice(0, 4)
+}
+
 makeDeck()
-updateTileSelector()
-console.log(tileSelector)
+endRound()
+console.log(deck[0].id, deck[1].id, deck[2].id, deck[3].id, deck[4].id)
+endRound()
+console.log(deck[0].id, deck[1].id, deck[2].id, deck[3].id, deck[4].id)
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
