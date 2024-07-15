@@ -181,14 +181,16 @@ const players = [
     },
 ]
 
+con
+
 const gameState = {
     turn: 0,
     playerCount: 4,
-    isEndGame: false,  
+    isEndGame: false,
 }
 // -----Variables-----
 let deck = [...tiles]
-
+let message = ``
 
 // -----Functions-----
 function init () {
@@ -206,11 +208,5 @@ function shuffleDeck() {
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
   }
-
-makeDeck()
-
-deck.forEach((tile) => {
-    console.log(tile.id)
-})
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
