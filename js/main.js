@@ -67,7 +67,7 @@ const players = [
         [``, 0],
         [``, 0],
         [``, 0],
-        [``, 0],
+        [`h`, 0],
         [``, 0],
         [``, 0],
         [``, 0],
@@ -99,7 +99,7 @@ const players = [
         [``, 0],
         [``, 0],
         [``, 0],
-        [``, 0],
+        [`h`, 0],
         [``, 0],
         [``, 0],
         [``, 0],
@@ -131,7 +131,7 @@ const players = [
         [``, 0],
         [``, 0],
         [``, 0],
-        [``, 0],
+        [`h`, 0],
         [``, 0],
         [``, 0],
         [``, 0],
@@ -163,7 +163,7 @@ const players = [
         [``, 0],
         [``, 0],
         [``, 0],
-        [``, 0],
+        [`h`, 0],
         [``, 0],
         [``, 0],
         [``, 0],
@@ -190,6 +190,7 @@ const gameState = {
     round: 0,
     playerCount: 4,
     isEndGame: false,
+    nextPlayer: 1,
 }
 // -----Variables-----
 let deck
@@ -198,8 +199,12 @@ let message
 // -----Functions-----
 function init() {
     makeDeck()
+    // chooseStartPlayer()
+    updateTileSelector()
+    updateDeck()
     gameState.round = 1
-    render()
+    gameState.isEndGame = false
+    // render()
 }
 
 function makeDeck() {
@@ -218,6 +223,7 @@ function endRound() {
     updateTileSelector()
     updateDeck()
     gameState.round ++
+    gameState.nextPlayer = tileSelector[1][0].owner
 }
 
 function updateTileSelector() {
@@ -227,14 +233,19 @@ function updateTileSelector() {
     sortTiles(tileSelector[0])
 }
 
-function updateDeck() {
-    deck.splice(0, 4)
-}
-
 function sortTiles(array) {
     array.sort((a, b) => {
         return a.id-b.id
         })
 }
+
+function updateDeck() {
+    deck.splice(0, 4)
+}
+
+function claimTile(player, tile) {
+    tile[`owner`] = player.id
+}
+
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
