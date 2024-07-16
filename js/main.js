@@ -199,17 +199,16 @@ let message
 // -----Cached DOM Elements-----
 const boardEl = document.querySelector(`.board`)
 const squareEls = document.querySelectorAll(`.sqr`)
-console.log(squareEls)
 
 // -----Functions-----
 function init() {
     makeDeck()
     chooseStartPlayer()
     updateTileSelector()
-    updateDeck()
+    reduceDeck()
     gameState.round = 1
     gameState.isEndGame = false
-    // render()
+    render()
 }
 
 function makeDeck() {
@@ -226,7 +225,7 @@ function shuffleDeck() {
 
 function endRound() {
     updateTileSelector()
-    updateDeck()
+    reduceDeck()
     gameState.round ++
     gameState.nextPlayer = tileSelector[1][0].owner
 }
@@ -244,7 +243,7 @@ function sortTiles(array) {
         })
 }
 
-function updateDeck() {
+function reduceDeck() {
     deck.splice(0, 4)
 }
 
@@ -256,8 +255,20 @@ function chooseStartPlayer() {
     gameState.nextPlayer = Math.ceil(Math.random()*4)
 }
 
-function checkValidPlacement() {
-
+function render () {
+    players[gameState.nextPlayer].board.forEach((sqr, i) =>{
+        console.log(sqr)
+        squareEls[i].textContent = sqr[0]
+    })
 }
+
+init()
+// function handleClick () {
+
+// }
+
+// function checkValidPlacement() {
+
+// }
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/

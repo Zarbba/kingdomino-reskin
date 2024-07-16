@@ -12,4 +12,5 @@ html {
     width: 17%;
     border: 3px solid black;
     aspect-ratio: 1/1;
+    font-size: 5rem;
 }
