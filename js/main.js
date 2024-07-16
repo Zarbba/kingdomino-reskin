@@ -52,7 +52,7 @@ const tiles = [
 
 const players = [
     {
-        id: 1,
+        id: 0,
         name: ``,
         board: [
         [``, 0],
@@ -83,6 +83,38 @@ const players = [
         ],
         score: 0,
     },
+    {
+        id: 1,
+        name: ``,
+        board: [
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [`h`, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        [``, 0],
+        ],
+        score: 0,
+    },  
     {
         id: 2,
         name: ``,
@@ -146,38 +178,6 @@ const players = [
         [``, 0],
         ],
         score: 0,
-    },  
-    {
-        id: 4,
-        name: ``,
-        board: [
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [`h`, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        ],
-        score: 0,
     },
 ]
 
@@ -190,7 +190,8 @@ const gameState = {
     round: 0,
     playerCount: 4,
     isEndGame: false,
-    nextPlayer: 1,
+    currentPlayer: 0,
+    phase: ``
 }
 // -----Variables-----
 let deck
@@ -200,6 +201,15 @@ let message
 const boardEl = document.querySelector(`.board`)
 const squareEls = document.querySelectorAll(`.sqr`)
 
+// -----Event Listeners-----
+boardEl.addEventListener(`click`, (e) => {
+    if (e.target.classList.contains(`sqr`)) {
+        handleClick(e.target)
+    } else {
+        return
+    }
+})
+
 // -----Functions-----
 function init() {
     makeDeck()
@@ -208,6 +218,7 @@ function init() {
     reduceDeck()
     gameState.round = 1
     gameState.isEndGame = false
+    gameState.phase = `selection`
     render()
 }
 
@@ -227,7 +238,7 @@ function endRound() {
     updateTileSelector()
     reduceDeck()
     gameState.round ++
-    gameState.nextPlayer = tileSelector[1][0].owner
+    gameState.currentPlayer = tileSelector[1][0].owner
 }
 
 function updateTileSelector() {
@@ -248,24 +259,26 @@ function reduceDeck() {
 }
 
 function claimTile(player, tile) {
-    tile[`owner`] = player.id
+    tileSelector[0][tile.id][`owner`] = player.id
 }
 
 function chooseStartPlayer() {
-    gameState.nextPlayer = Math.ceil(Math.random()*4)
+    gameState.currentPlayer = Math.floor(Math.random()*gameState.playerCount)
 }
 
 function render () {
-    players[gameState.nextPlayer].board.forEach((sqr, i) =>{
+    players[gameState.currentPlayer].board.forEach((sqr, i) =>{
         console.log(sqr)
         squareEls[i].textContent = sqr[0]
     })
 }
 
 init()
-// function handleClick () {
-
-// }
+function handleClick (e) {
+    checkValidPlacement(e)
+    // placeTile()
+    claimTile(gameState.currentPlayer, e)
+}
 
 // function checkValidPlacement() {
 
