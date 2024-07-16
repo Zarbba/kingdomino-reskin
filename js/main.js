@@ -199,7 +199,7 @@ let message
 // -----Functions-----
 function init() {
     makeDeck()
-    // chooseStartPlayer()
+    chooseStartPlayer()
     updateTileSelector()
     updateDeck()
     gameState.round = 1
@@ -245,6 +245,10 @@ function updateDeck() {
 
 function claimTile(player, tile) {
     tile[`owner`] = player.id
+}
+
+function chooseStartPlayer() {
+    gameState.nextPlayer = Math.ceil(Math.random()*4)
 }
 
 // -----References-----
