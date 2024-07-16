@@ -196,6 +196,11 @@ const gameState = {
 let deck
 let message
 
+// -----Cached DOM Elements-----
+const boardEl = document.querySelector(`.board`)
+const squareEls = document.querySelectorAll(`.sqr`)
+console.log(squareEls)
+
 // -----Functions-----
 function init() {
     makeDeck()
@@ -251,5 +256,8 @@ function chooseStartPlayer() {
     gameState.nextPlayer = Math.ceil(Math.random()*4)
 }
 
+function checkValidPlacement() {
+
+}
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
