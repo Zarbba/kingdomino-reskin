@@ -1,32 +1,34 @@
-html {
+* {
     font-size: 16px;
     box-sizing: border-box;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+    margin: 0;
 }
 
 .board {
-    display: flex;
-    flex-wrap: wrap;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    width: 25rem
 }
 
 .tile-selector {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: 10rem;
 }
 
 .ts-tile {
     display: flex;
-    margin: 2rem;
+    margin-block: 2rem;
 }
 
 .sqr, .ts-sqr {
-    width: 17rem;
     border: 3px solid black;
     aspect-ratio: 1/1;
-    font-size: 5rem;
+    font-size: 2rem;
+}
+
+.ts-sqr {
+    width: 5rem;
 }

@@ -200,7 +200,8 @@ let message
 
 // -----Cached DOM Elements-----
 const gameSpaceEl = document.querySelector(`.game-space`)
-const squareEls = document.querySelectorAll(`.sqr`)
+const boardSquareEls = document.querySelectorAll(`.sqr`)
+const tileSquareEls = document.querySelectorAll(`.ts-sqr`)
 const tsTilesEls = document.querySelectorAll(`.ts-tile`)
 const messageEl = document.querySelector(`.message`)
 
@@ -250,7 +251,7 @@ function reduceDeck() {
 
 function renderBoard() {
     players[gameState.currentPlayer].board.forEach((sqr, i) =>{
-        squareEls[i].textContent = sqr[0]
+        boardSquareEls[i].textContent = `${sqr[0]} ${sqr[1]}`
     })
 }
 
@@ -258,12 +259,21 @@ function renderMessage() {
     messageEl.textContent = message
 }
 
-// function 
+function renderTileSelector() {
+    tileSelector[0].forEach((sqr, i) =>{
+            tileSquareEls[i*2].textContent = `${sqr.leftMap} ${sqr.leftScore}`
+            tileSquareEls[i*2+1].textContent = `${sqr.rightMap} ${sqr.rightScore}`
+    })        
+    tileSelector[1].forEach((sqr, i) =>{
+                tileSquareEls[i*2+7].textContent = `${sqr.leftMap} ${sqr.leftScore}`
+                tileSquareEls[i*2+8].textContent = `${sqr.rightMap} ${sqr.rightScore}`    
+    })
+}
 
 function render() {
     renderBoard()
     renderMessage()
-    // renderTileSelector()
+    renderTileSelector()
 }
 
 
@@ -311,6 +321,6 @@ function handleClick (e) {
 }
 
 init()
-
+console.log(tileSelector)
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
