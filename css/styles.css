@@ -17,10 +17,14 @@ body {
 .tile-selector {
     display: flex;
     justify-content: space-evenly;
-    flex-wrap: wrap;
 }
 
-.sqr, .lts-sqr, .rts-sqr {
+.ts-tile {
+    display: flex;
+    margin: 2rem;
+}
+
+.sqr, .ts-sqr {
     width: 17rem;
     border: 3px solid black;
     aspect-ratio: 1/1;

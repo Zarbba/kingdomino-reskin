@@ -199,30 +199,22 @@ let deck
 let message
 
 // -----Cached DOM Elements-----
-const boardEl = document.querySelector(`.board`)
+const gameSpaceEl = document.querySelector(`.game-space`)
 const squareEls = document.querySelectorAll(`.sqr`)
+const tsTilesEls = document.querySelectorAll(`.ts-tile`)
+const messageEl = document.querySelector(`.message`)
 
 // -----Event Listeners-----
-boardEl.addEventListener(`click`, (e) => {
-    if (e.target.classList.contains(`sqr`)) {
-        handleClick(e.target)
+gameSpaceEl.addEventListener(`click`, (e) => {
+    if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`)) {
+        console.log(e)
+        // handleClick(e.target)
     } else {
         return
     }
 })
 
 // -----Functions-----
-function init() {
-    makeDeck()
-    chooseStartPlayer()
-    updateTileSelector()
-    reduceDeck()
-    gameState.round = 1
-    gameState.isEndGame = false
-    gameState.phase = `selection`
-    render()
-}
-
 function makeDeck() {
     deck = [...tiles]
     shuffleDeck() 
@@ -235,11 +227,9 @@ function shuffleDeck() {
     }
 }
 
-function endRound() {
-    updateTileSelector()
-    reduceDeck()
-    gameState.round ++
-    gameState.currentPlayer = tileSelector[1][0].owner
+function chooseStartPlayer() {
+    gameState.currentPlayer = Math.floor(Math.random()*gameState.playerCount)
+    gameState.playersActed = 0
 }
 
 function updateTileSelector() {
@@ -259,30 +249,64 @@ function reduceDeck() {
     deck.splice(0, 4)
 }
 
-function claimTile(player, tile) {
-    tileSelector[0][tile.id][`owner`] = player.id
-}
-
-function chooseStartPlayer() {
-    gameState.currentPlayer = Math.floor(Math.random()*gameState.playerCount)
-}
-
-function render () {
+function renderBoard() {
     players[gameState.currentPlayer].board.forEach((sqr, i) =>{
-        console.log(sqr)
         squareEls[i].textContent = sqr[0]
     })
 }
 
-init()
-function handleClick (e) {
-    checkValidPlacement(e)
-    // placeTile()
-    claimTile(gameState.currentPlayer, e)
+function renderMessage() {
+    messageEl.textContent = message
 }
 
-// function checkValidPlacement() {
+function render() {
+    renderBoard()
+    renderMessage()
+    // renderTileSelector()
+}
 
-// }
+
+function init() {
+    makeDeck()
+    chooseStartPlayer()
+    updateTileSelector()
+    reduceDeck()
+    message = ``
+    gameState.round = 1
+    gameState.isEndGame = false
+    gameState.phase = `selection`
+    render()
+}
+
+
+
+function endRound() {
+    updateTileSelector()
+    reduceDeck()
+    gameState.round ++
+    gameState.currentPlayer = tileSelector[1][0].owner
+    gameState.playersActed = 0
+}
+
+function claimTile(player, tile) {
+    tileSelector[0][tile][`owner`] = player.id
+    gameState.phase = `placement`
+    gameState.playersActed ++
+    if (gameState.playersActed === gameState.playerCount) {
+        endRound()
+     }
+}
+
+function handleClick (e) {
+    if (gameState.phase === `selection`) {
+        if (/*checkOwnership() === */true) {
+            claimTile(players[gameState.currentPlayer], e.id-25)
+            console.log(tileSelector[0])
+        }
+        render()
+    }
+}
+
+init()
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
