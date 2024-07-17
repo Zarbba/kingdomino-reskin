@@ -207,7 +207,7 @@ const messageEl = document.querySelector(`.message`)
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
     if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`)) {
-        handleClick(e.target.parentNode.id)
+        handleClick(e)
     } else {
         return
     }
@@ -298,10 +298,13 @@ function claimTile(player, tile) {
      }
 }
 
-function handleClick (id) {
+function handleClick (e) {
     if (gameState.phase === `selection`) {
-        if (/*checkOwnership() === */true) {
-            claimTile(players[gameState.currentPlayer], id-25)
+        if (tileSelector[0][e.target.parentNode.id-25][`owner`] === undefined) {
+            console.log(tileSelector[0][e.target.parentNode.id-25][`owner`])
+            claimTile(players[gameState.currentPlayer], e.target.parentNode.id-25)
+        } else {
+            message = `This tile has already been claimed. Choose another tile.`
         }
         render()
     }
