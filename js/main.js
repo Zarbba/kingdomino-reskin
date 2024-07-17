@@ -317,11 +317,16 @@ function claimTile(player, tile) {
 }
 
 function checkValidPlacement(square) {
-    return false
+    if (/* check target square || check target square - 1*/) {
+        return true
+    } else {
+        return false
+    }
 }
 
 function placeTile(tile) {
-
+    players[gameState.currentPlayer].board[tile] = /* finds tile in tileSelector[1] that is owned by current player and applies right keys */
+    players[gameState.currentPlayer].board[tile-1] = /* finds tile in tileSelector[1] that is owned by current player and applies left keys */
 }
 
 function handleClick (e) {
