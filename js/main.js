@@ -204,6 +204,7 @@ const boardSquareEls = document.querySelectorAll(`.sqr`)
 const tileSquareEls = document.querySelectorAll(`.ts-sqr`)
 const tsTilesEls = document.querySelectorAll(`.ts-tile`)
 const messageEl = document.querySelector(`.message`)
+const playerEl = document.querySelector(`.player`)
 
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
@@ -255,8 +256,9 @@ function renderBoard() {
     })
 }
 
-function renderMessage() {
+function renderMessages() {
     messageEl.textContent = message
+    playerEl.textContent = `It is player ${gameState.currentPlayer+1}'s turn`
 }
 
 function renderTileSelector() {
@@ -265,14 +267,14 @@ function renderTileSelector() {
             tileSquareEls[i*2+1].textContent = `${sqr.rightMap} ${sqr.rightScore}`
     })        
     tileSelector[1].forEach((sqr, i) =>{
-                tileSquareEls[i*2+7].textContent = `${sqr.leftMap} ${sqr.leftScore}`
-                tileSquareEls[i*2+8].textContent = `${sqr.rightMap} ${sqr.rightScore}`    
+                tileSquareEls[i*2+8].textContent = `${sqr.leftMap} ${sqr.leftScore}`
+                tileSquareEls[i*2+9].textContent = `${sqr.rightMap} ${sqr.rightScore}`    
     })
 }
 
 function render() {
     renderBoard()
-    renderMessage()
+    renderMessages()
     renderTileSelector()
 }
 
@@ -282,7 +284,7 @@ function init() {
     chooseStartPlayer()
     updateTileSelector()
     reduceDeck()
-    message = ``
+    message = `Please choose a tile to claim.`
     gameState.round = 1
     gameState.isEndGame = false
     gameState.phase = `selection`
@@ -297,30 +299,48 @@ function endRound() {
     gameState.round ++
     gameState.currentPlayer = tileSelector[1][0].owner
     gameState.playersActed = 0
+    gameState.phase = `placement`
+    message = `It is Player ${gameState.currentPlayer +1}'s turn to place a tile.`
 }
 
 function claimTile(player, tile) {
-    tileSelector[0][Number(tile)][`owner`] = player.id
-    gameState.phase = `placement`
+    tileSelector[0][tile][`owner`] = player.id
+    if (gameState.round > 1) {
+        gameState.currentPlayer = tileSelector[1][gameState.playersActed]
+        gameState.phase = `placement`
+        message = `Please choose where to place your tile.`
+    }
     gameState.playersActed ++
     if (gameState.playersActed === gameState.playerCount) {
         endRound()
      }
 }
 
+function checkValidPlacement(square) {
+    return false
+}
+
+function placeTile(tile) {
+
+}
+
 function handleClick (e) {
     if (gameState.phase === `selection`) {
         if (tileSelector[0][e.target.parentNode.id-25][`owner`] === undefined) {
-            console.log(tileSelector[0][e.target.parentNode.id-25][`owner`])
             claimTile(players[gameState.currentPlayer], e.target.parentNode.id-25)
         } else {
-            message = `This tile has already been claimed. Choose another tile.`
+            message = `That tile has already been claimed by player ${tileSelector[0][e.target.parentNode.id-25][`owner`]+1}. Please choose a different tile.`
         }
-        render()
+    } else if (gameState.phase === `placement`) {
+        if (checkValidPlacement(e) === true) {
+            placeTile(e)
+        } else {
+            message = `That tile placement is not legal. Please choose another location.`
+        }
     }
+    render()
 }
 
 init()
-console.log(tileSelector)
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
