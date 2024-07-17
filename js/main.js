@@ -191,7 +191,8 @@ const gameState = {
     playerCount: 4,
     isEndGame: false,
     currentPlayer: 0,
-    phase: ``
+    phase: ``,
+    playersActed: 0,
 }
 // -----Variables-----
 let deck
