@@ -207,8 +207,7 @@ const messageEl = document.querySelector(`.message`)
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
     if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`)) {
-        console.log(e)
-        // handleClick(e.target)
+        handleClick(e.target.parentNode.id)
     } else {
         return
     }
@@ -259,6 +258,8 @@ function renderMessage() {
     messageEl.textContent = message
 }
 
+// function 
+
 function render() {
     renderBoard()
     renderMessage()
@@ -289,7 +290,7 @@ function endRound() {
 }
 
 function claimTile(player, tile) {
-    tileSelector[0][tile][`owner`] = player.id
+    tileSelector[0][Number(tile)][`owner`] = player.id
     gameState.phase = `placement`
     gameState.playersActed ++
     if (gameState.playersActed === gameState.playerCount) {
@@ -297,16 +298,16 @@ function claimTile(player, tile) {
      }
 }
 
-function handleClick (e) {
+function handleClick (id) {
     if (gameState.phase === `selection`) {
         if (/*checkOwnership() === */true) {
-            claimTile(players[gameState.currentPlayer], e.id-25)
-            console.log(tileSelector[0])
+            claimTile(players[gameState.currentPlayer], id-25)
         }
         render()
     }
 }
 
 init()
+
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
