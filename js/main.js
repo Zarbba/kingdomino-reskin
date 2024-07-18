@@ -328,8 +328,24 @@ function claimTile(player, tile) {
      }
 }
 
-function checkValidPlacement(square) {
-    // if (/* check target square || check target square - 1*/) {
+function checkValidPlacement(sqr) {
+    console.log(sqr)
+    console.log(gameState.currentPlayer)
+    console.log(players[gameState.currentPlayer].board[sqr - 5])
+    // if (
+    //     players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+    //     players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+    //     players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+    //     players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+    //     players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+    //     players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+    //     players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
+    //     players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
+    //     players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
+    //     players[gameState.currentPlayer].board[sqr - 6][0] === `h` ||
+    //     players[gameState.currentPlayer].board[sqr + 4][0] === `h` ||
+    //     players[gameState.currentPlayer].board[sqr - 2][0] === `h`
+    // ) {
         return true
     // } else {
     //     return false
@@ -355,13 +371,12 @@ function handleClick (e) {
             message = `That tile has already been claimed by player ${availableTiles[e.target.parentNode.id-25][`owner`]+1}. Please choose a different tile.`
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
-        if (checkValidPlacement(e) === true) {
+        if (checkValidPlacement(e.target.id) === true) {
             placeTile(e.target.id, claimedTiles.findIndex(findOwner))
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
     }
-    console.log(`CP: ${gameState.currentPlayer}, PA: ${gameState.playersActed}`)
     render()
 }
 
