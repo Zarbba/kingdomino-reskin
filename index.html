@@ -10,7 +10,6 @@
 <body>
     <header>
         <h1>Space Domino</h1>
-        <nav>Rules</nav>
     </header>
     <aside class="rules hidden">
         <h2>Game phases:</h2>
@@ -45,12 +44,10 @@
             The player with the most points at the end of the game wins!
         </p>
     </aside>
-    <p class="message"></p>
-    <p class="player"></p>
     <section class="game-space">
         <section class="tile-selector">
             <div class="this-turn">
-                <h2>Available Tiles</h2>
+                <h3>Available Tiles</h2>
                 <div class="ts-tile" id="25">
                     <div class="ts-sqr left"></div>
                     <div class="ts-sqr right"></div>
@@ -73,7 +70,7 @@
                 </div>            
             </div>
             <div class="last-turn">
-                <h2>Claimed Tiles</h2>
+                <h3>Claimed Tiles</h2>
                 <div class="ts-tile">
                     <div class="ts-sqr left"></div>
                     <div class="ts-sqr right"></div>
@@ -125,6 +122,12 @@
             <div class="sqr" id="24"></div>
         </section>
         <aside class="controls">
+            <div class="current-tile">
+                <div class="c-sqr left"></div>
+                <div class="c-sqr right"></div>
+            </div>
+            <p class="message"></p>
+            <p class="player"></p>        
             <button class="discard">Discard Tile</button>
             <button class="rotate">Rotate Tile</button>
             <button class="reset">Restart Game</button>

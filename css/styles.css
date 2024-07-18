@@ -4,8 +4,31 @@
     margin: 0;
 }
 
-.hidden {
-    display: none;
+@font-face {
+    font-family: 'Freedom';
+    src: url('../assets/fonts/Freedom.ttf');
+    font-weight: normal;
+    font-style: normal;
+  } 
+  
+body {
+    font-family: Freedom, system-ui, sans-serif;
+    background-color: black;
+    color: greenyellow;
+    text-shadow: .1rem .2rem darkblue;
+    padding: .5rem;
+}
+
+h1 {
+    text-align: center;
+    font-size: 6rem;
+    text-shadow: .2rem .3rem darkblue;
+}
+
+h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    text-shadow: .1rem .1rem darkblue;
 }
 
 .game-space {
@@ -27,50 +50,78 @@
     gap: 10rem;
 }
 
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
 .ts-tile {
     display: flex;
     margin-block: 2rem;
 }
 
-.sqr, .ts-sqr {
-    border: 0.2rem solid black;
+.current-tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sqr, .ts-sqr, .c-sqr {
+    border: 0.2rem solid white;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    text-shadow: 3px 1px 1px black;
-    color: red;
     aspect-ratio: 1/1;
     font-size: 2rem;
 }
 
-.ts-sqr {
+.ts-sqr, .c-sqr {
     width: 5rem;
 }
 
 .h {
-    background-color: red;
+    background-image: url("../assets/images/h.webp") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .y {
-    background-color: yellow;
+    background-image: url("../assets/images/y.webp") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .dg {
-    background-color: darkgreen;
+    background-image: url("../assets/images/dg.jpg") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .pg {
-    background-color: palegreen;
+    background-image: url("../assets/images/pg.webp") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .b {
-    background-color: blue;
+    background-image: url("../assets/images/b.webp") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .bl {
-    background-color: black;
+    background-image: url("../assets/images/bl.webp") ;
+    background-size: cover;
+    background-position: center ;
 }
 
 .br {
-    background-color: brown;
+    background-image: url("../assets/images/br.webp") ;
+    background-size: cover;
+    background-position: center ;
+}
+
+.hidden {
+    display: none;
 }

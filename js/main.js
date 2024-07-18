@@ -208,6 +208,9 @@ const tsTilesEls = document.querySelectorAll(`.ts-tile`)
 const messageEl = document.querySelector(`.message`)
 const playerEl = document.querySelector(`.player`)
 const ownerEL = document.querySelectorAll(`.owner`)
+const rulesEl = document.querySelector(`.rules`)
+const currentSquareEls = document.querySelectorAll(`.c-sqr`)
+const currentTileEl = document.querySelector('.current-tile')
 
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
@@ -289,10 +292,27 @@ function renderTileSelector() {
     })
 }
 
+function renderCurrentTile() {
+    if (gameState.phase === `placement`) {
+        if (currentTileEl.classList.contains(`hidden`)) {
+            currentTileEl.classList.toggle(`hidden`)
+        }
+        currentSquareEls[0].classList += `c-sqr`
+        currentSquareEls[0].classList += ` ${claimedTiles[claimedTiles.findIndex(findOwner)].leftMap}`
+        currentSquareEls[0].textContent = ` ${claimedTiles[claimedTiles.findIndex(findOwner)].leftScore}`
+        currentSquareEls[1].classList += `c-sqr`
+        currentSquareEls[1].classList += ` ${claimedTiles[claimedTiles.findIndex(findOwner)].rightMap}`
+        currentSquareEls[1].textContent = ` ${claimedTiles[claimedTiles.findIndex(findOwner)].rightScore}`
+    } else {         
+        currentTileEl.classList += ` hidden`
+    }
+}
+
 function render() {
     renderBoard()
     renderMessages()
     renderTileSelector()
+    renderCurrentTile()
 }
 
 function init() {
