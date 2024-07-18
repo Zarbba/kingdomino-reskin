@@ -361,7 +361,6 @@ function claimTile(player, tile) {
         gameState.playersActed ++
     availableTiles[tile][`owner`] = player.id
     if (gameState.round > 1) {
-        console.log(claimedTiles)
         if (gameState.playersActed < 4) {
             gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
         }
@@ -528,3 +527,5 @@ function handleClick (e) {
 init()
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
+// Font found here: https://www.fontspace.com/freedom-font-f14832
+// Images found here: https://www.nasa.gov/images/
