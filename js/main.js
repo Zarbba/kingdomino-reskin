@@ -206,6 +206,7 @@ const tileSquareEls = document.querySelectorAll(`.ts-sqr`)
 const tsTilesEls = document.querySelectorAll(`.ts-tile`)
 const messageEl = document.querySelector(`.message`)
 const playerEl = document.querySelector(`.player`)
+const ownerEL = document.querySelectorAll(`.owner`)
 
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
@@ -269,6 +270,10 @@ function renderMessages() {
 
 function renderTileSelector() {
     availableTiles.forEach((sqr, i) => {
+        ownerEL[i].textContent = ``
+        if (sqr.owner !== undefined) {
+            ownerEL[i].textContent = `Claimed by player ${sqr.owner + 1}`
+        }
         tileSquareEls[i*2].classList = `ts-sqr left`
         tileSquareEls[i*2].classList += ` ${sqr.leftMap}`
         tileSquareEls[i*2].textContent = `${sqr.leftScore}`
@@ -277,6 +282,7 @@ function renderTileSelector() {
         tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
     })
     claimedTiles.forEach((sqr, i) =>{
+        ownerEL[i + 4].textContent = `Claimed by player ${sqr.owner + 1}`
         tileSquareEls[i*2+8].classList = `ts-sqr left`
         tileSquareEls[i*2+8].classList += ` ${sqr.leftMap}`
         tileSquareEls[i*2+8].textContent = `${sqr.leftScore}`
