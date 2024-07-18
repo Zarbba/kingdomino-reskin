@@ -237,7 +237,6 @@ function chooseStartPlayer() {
 function updateTileSelector() {
     if (gameState.round > 1) {
         claimedTiles.push(availableTiles[0],availableTiles[1],availableTiles[2],availableTiles[3],)
-        console.log(claimedTiles)
     }
     availableTiles.splice(0, 4)
     availableTiles.push(deck[0], deck[1], deck[2], deck[3])
@@ -305,14 +304,26 @@ function init() {
     render()
 }
 
+function checkEndGame() {
+    if (deck.length === 0) {
+        gameState.isEndGame = true
+    }
+}
+
 function endRound() {
-    gameState.round ++
-    updateTileSelector()
-    reduceDeck()
-    gameState.playersActed = 0
-    gameState.currentPlayer = claimedTiles[0][`owner`]
-    gameState.phase = `placement`
-    message = `Please chose where to place your tile.`
+    if (gameState.isEndGame === true) {
+        // calculateScores()
+        return
+    } else {
+        gameState.round ++
+        updateTileSelector()
+        reduceDeck()
+        checkEndGame()
+        gameState.playersActed = 0
+        gameState.currentPlayer = claimedTiles[0][`owner`]
+        gameState.phase = `placement`
+        message = `Please chose where to place your tile.`    
+    }
 }
 
 function claimTile(player, tile) {
@@ -335,26 +346,108 @@ function claimTile(player, tile) {
      }
 }
 
-function checkValidPlacement(sqr) {
-    console.log(players[gameState.currentPlayer].board)
-    console.log(players[gameState.currentPlayer].board[12])
+function checkUp(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
         players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
         players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr - 6][0] === `h`
+    ) {
+        return true
+    }
+}
+
+function checkDown(sqr) {
+    if (
+        players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
         players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr - 6][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr + 4][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr + 4][0] === `h`
+    ) {
+        return true
+    }
+}
+
+function checkLeft(sqr) {
+    if (
+        players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
         players[gameState.currentPlayer].board[sqr - 2][0] === `h`
     ) {
         return true
-    } else {
+    }
+}
+
+function checkRight(sqr) {
+    if (
+        players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr + 1][0] === `h`
+    ) {
+        return true
+    }
+}
+function checkValidPlacement(sqr) {
+    if (
+        players[gameState.currentPlayer].board[sqr][0] !== `` ||
+        sqr === 0 ||
+        sqr === 5 ||
+        sqr === 10 ||
+        sqr === 13 ||
+        sqr === 15 ||
+        sqr === 20
+    ) {
         return false
+    } else if (
+        sqr === 7 ||
+        sqr === 8 ||
+        sqr === 17 ||
+        sqr === 18
+    ) {
+        return checkUp(sqr) ||
+        checkDown(sqr) ||
+        checkRight(sqr) ||
+        checkLeft(sqr)
+    } else if (sqr === 1) {
+        return checkDown(sqr) ||
+        checkRight(sqr)
+    } else if (sqr === 4) {
+        return checkDown(sqr) ||
+        checkLeft(sqr)
+    } else if (sqr === 21) {
+        return checkUp(sqr) ||
+        checkRight(sqr)
+    } else if (sqr === 24) {
+        return checkUp(sqr) ||
+        checkLeft(sqr)
+    } else if (
+        sqr === 6 ||
+        sqr === 11 ||
+        sqr === 16
+    ) {
+        return checkUp(sqr) || 
+        checkDown(sqr) || 
+        checkRight(sqr)
+    } else if (
+        sqr === 9 ||
+        sqr === 14 ||
+        sqr === 19
+    ) {
+       return checkUp(sqr) ||
+        checkDown(sqr) ||
+        checkLeft(sqr)
+    } else if (
+        sqr === 2 ||
+        sqr === 3
+    ) {
+        return checkRight(sqr) ||
+        checkDown(sqr) ||
+        checkLeft(sqr)
+    } else if (
+        sqr === 22 ||
+        sqr === 23
+    ) {
+        return checkRight(sqr) ||
+        checkUp(sqr) ||
+        checkLeft(sqr)
     }
 }
 
@@ -371,14 +464,14 @@ function placeTile(tile, id) {
 
 function handleClick (e) {
     if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
-        if (availableTiles[e.target.parentNode.id-25][`owner`] === undefined) {
-            claimTile(players[gameState.currentPlayer], e.target.parentNode.id-boardCoef)
+        if (availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`] === undefined) {
+            claimTile(players[gameState.currentPlayer], Number(e.target.parentNode.id)-boardCoef)
         } else {
-            message = `That tile has already been claimed by player ${availableTiles[e.target.parentNode.id-boardCoef][`owner`]+1}. Please choose a different tile.`
+            message = `That tile has already been claimed by player ${availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`]+1}. Please choose a different tile.`
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
-        if (checkValidPlacement(e.target.id) === true) {
-            placeTile(e.target.id, claimedTiles.findIndex(findOwner))
+        if (checkValidPlacement(Number(e.target.id)) === true) {
+            placeTile(Number(e.target.id), claimedTiles.findIndex(findOwner))
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
