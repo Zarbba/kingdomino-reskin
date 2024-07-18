@@ -181,10 +181,8 @@ const players = [
     },
 ]
 
-const tileSelector = [
-    [],
-    [],
-]
+const availableTiles = []
+const claimedTiles = []
 
 const gameState = {
     round: 0,
@@ -234,10 +232,12 @@ function chooseStartPlayer() {
 }
 
 function updateTileSelector() {
-    tileSelector[1] = tileSelector[0]
-    tileSelector[0] = []
-    tileSelector[0].push(deck[0], deck[1], deck[2], deck[3])
-    sortTiles(tileSelector[0])
+    if (gameState.round > 1) {
+        claimedTiles.push(availableTiles[0],availableTiles[1],availableTiles[2],availableTiles[3],)
+    }
+    availableTiles.splice(0, 4)
+    availableTiles.push(deck[0], deck[1], deck[2], deck[3])
+    sortTiles(availableTiles)
 }
 
 function sortTiles(array) {
@@ -262,11 +262,11 @@ function renderMessages() {
 }
 
 function renderTileSelector() {
-    tileSelector[0].forEach((sqr, i) =>{
+    availableTiles.forEach((sqr, i) =>{
             tileSquareEls[i*2].textContent = `${sqr.leftMap} ${sqr.leftScore}`
             tileSquareEls[i*2+1].textContent = `${sqr.rightMap} ${sqr.rightScore}`
     })        
-    tileSelector[1].forEach((sqr, i) =>{
+    claimedTiles.forEach((sqr, i) =>{
                 tileSquareEls[i*2+8].textContent = `${sqr.leftMap} ${sqr.leftScore}`
                 tileSquareEls[i*2+9].textContent = `${sqr.rightMap} ${sqr.rightScore}`    
     })
@@ -291,24 +291,26 @@ function init() {
     render()
 }
 
-
-
 function endRound() {
+    gameState.round ++
     updateTileSelector()
     reduceDeck()
-    gameState.round ++
-    gameState.currentPlayer = tileSelector[1][0].owner
     gameState.playersActed = 0
+    gameState.currentPlayer = claimedTiles[0][`owner`]
     gameState.phase = `placement`
-    message = `It is Player ${gameState.currentPlayer +1}'s turn to place a tile.`
+    message = `Please chose where to place your tile.`
 }
 
 function claimTile(player, tile) {
-    tileSelector[0][tile][`owner`] = player.id
+    availableTiles[tile][`owner`] = player.id
     if (gameState.round > 1) {
-        gameState.currentPlayer = tileSelector[1][gameState.playersActed]
+        gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
         gameState.phase = `placement`
         message = `Please choose where to place your tile.`
+    } else if (gameState.currentPlayer === 3){
+        gameState.currentPlayer = 0
+    } else {
+        gameState.currentPlayer ++
     }
     gameState.playersActed ++
     if (gameState.playersActed === gameState.playerCount) {
@@ -317,28 +319,35 @@ function claimTile(player, tile) {
 }
 
 function checkValidPlacement(square) {
-    if (/* check target square || check target square - 1*/) {
+    // if (/* check target square || check target square - 1*/) {
         return true
-    } else {
-        return false
-    }
+    // } else {
+    //     return false
+    // }
 }
 
-function placeTile(tile) {
-    players[gameState.currentPlayer].board[tile] = /* finds tile in tileSelector[1] that is owned by current player and applies right keys */
-    players[gameState.currentPlayer].board[tile-1] = /* finds tile in tileSelector[1] that is owned by current player and applies left keys */
+function findOwner(tile) {
+    return tile[`owner`] === gameState.currentPlayer
+}
+
+function placeTile(tile, id) {
+    players[gameState.currentPlayer].board[tile] = [claimedTiles[id].rightMap, claimedTiles[id].rightScore]
+    players[gameState.currentPlayer].board[tile-1] = [claimedTiles[id].leftMap, claimedTiles[id].leftScore]
+    message = `Please choose a tile to claim.`
+    gameState.phase = `selection`
 }
 
 function handleClick (e) {
-    if (gameState.phase === `selection`) {
-        if (tileSelector[0][e.target.parentNode.id-25][`owner`] === undefined) {
+    if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
+        if (availableTiles[e.target.parentNode.id-25][`owner`] === undefined) {
             claimTile(players[gameState.currentPlayer], e.target.parentNode.id-25)
         } else {
-            message = `That tile has already been claimed by player ${tileSelector[0][e.target.parentNode.id-25][`owner`]+1}. Please choose a different tile.`
+            message = `That tile has already been claimed by player ${availableTiles[e.target.parentNode.id-25][`owner`]+1}. Please choose a different tile.`
         }
-    } else if (gameState.phase === `placement`) {
+    } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(e) === true) {
-            placeTile(e)
+            console.log(e.target.id, claimedTiles.findIndex(findOwner))
+            placeTile(e.target.id, claimedTiles.findIndex(findOwner))
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
