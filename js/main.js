@@ -336,25 +336,26 @@ function claimTile(player, tile) {
 }
 
 function checkValidPlacement(sqr) {
-    // console.log(players[gameState.currentPlayer].board[sqr - 5][0])
-    // if (
-    //     players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-    //     players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-    //     players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-    //     players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-    //     players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-    //     players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-    //     players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
-    //     players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
-    //     players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
-    //     players[gameState.currentPlayer].board[sqr - 6][0] === `h` ||
-    //     players[gameState.currentPlayer].board[sqr + 4][0] === `h` ||
-    //     players[gameState.currentPlayer].board[sqr - 2][0] === `h`
-    // ) {
+    console.log(players[gameState.currentPlayer].board)
+    console.log(players[gameState.currentPlayer].board[12])
+    if (
+        players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+        players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+        players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+        players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr - 6][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr + 4][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr - 2][0] === `h`
+    ) {
         return true
-    // } else {
-    //     return false
-    // }
+    } else {
+        return false
+    }
 }
 
 function findOwner(tile) {
