@@ -193,7 +193,7 @@ const gameState = {
     playersActed: 0,
 }
 
-const boardCoef = 25 //  This number is used to subtract modify the class of tile selectors in html to match them with indexes in JS
+const boardCoef = 25 //  This number is used to modify the class of tile selectors in html to match them with indexes in JS
 
 // -----Variables-----
 let deck
@@ -236,6 +236,7 @@ function chooseStartPlayer() {
 
 function updateTileSelector() {
     if (gameState.round > 1) {
+        claimedTiles.splice(0, 4)
         claimedTiles.push(availableTiles[0],availableTiles[1],availableTiles[2],availableTiles[3],)
     }
     availableTiles.splice(0, 4)
@@ -255,8 +256,8 @@ function reduceDeck() {
 
 function renderBoard() {
     players[gameState.currentPlayer].board.forEach((sqr, i) =>{
-        boardSquareEls[i].classList = (`sqr`)
-        boardSquareEls[i].classList += (` ${sqr[0]}`)
+        boardSquareEls[i].classList = `sqr`
+        boardSquareEls[i].classList += ` ${sqr[0]}`
         boardSquareEls[i].textContent = `${sqr[1]}`
     })
 }
@@ -267,20 +268,20 @@ function renderMessages() {
 }
 
 function renderTileSelector() {
-    availableTiles.forEach((sqr, i) =>{
+    availableTiles.forEach((sqr, i) => {
         tileSquareEls[i*2].classList = `ts-sqr left`
-        tileSquareEls[i*2].classList += (` ${sqr.leftMap}`)
+        tileSquareEls[i*2].classList += ` ${sqr.leftMap}`
         tileSquareEls[i*2].textContent = `${sqr.leftScore}`
         tileSquareEls[i*2+1].classList = `ts-sqr right`
-        tileSquareEls[i*2+1].classList += (` ${sqr.rightMap}`)
+        tileSquareEls[i*2+1].classList += ` ${sqr.rightMap}`
         tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
-    })        
+    })
     claimedTiles.forEach((sqr, i) =>{
         tileSquareEls[i*2+8].classList = `ts-sqr left`
-        tileSquareEls[i*2+8].classList += (` ${sqr.leftMap}`)
+        tileSquareEls[i*2+8].classList += ` ${sqr.leftMap}`
         tileSquareEls[i*2+8].textContent = `${sqr.leftScore}`
         tileSquareEls[i*2+9].classList = `ts-sqr right`
-        tileSquareEls[i*2+9].classList += (` ${sqr.rightMap}`)
+        tileSquareEls[i*2+9].classList += ` ${sqr.rightMap}`
         tileSquareEls[i*2+9].textContent = `${sqr.rightScore}`
     })
 }
@@ -290,7 +291,6 @@ function render() {
     renderMessages()
     renderTileSelector()
 }
-
 
 function init() {
     makeDeck()
@@ -385,6 +385,7 @@ function checkRight(sqr) {
         return true
     }
 }
+
 function checkValidPlacement(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr][0] !== `` ||
