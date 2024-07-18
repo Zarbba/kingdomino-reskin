@@ -265,12 +265,20 @@ function renderMessages() {
 
 function renderTileSelector() {
     availableTiles.forEach((sqr, i) =>{
-            tileSquareEls[i*2].textContent = `${sqr.leftMap} ${sqr.leftScore}`
-            tileSquareEls[i*2+1].textContent = `${sqr.rightMap} ${sqr.rightScore}`
+        tileSquareEls[i*2].classList = `ts-sqr left`
+        tileSquareEls[i*2].classList += (` ${sqr.leftMap}`)
+        tileSquareEls[i*2].textContent = `${sqr.leftScore}`
+        tileSquareEls[i*2+1].classList = `ts-sqr right`
+        tileSquareEls[i*2+1].classList += (` ${sqr.rightMap}`)
+        tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
     })        
     claimedTiles.forEach((sqr, i) =>{
-                tileSquareEls[i*2+8].textContent = `${sqr.leftMap} ${sqr.leftScore}`
-                tileSquareEls[i*2+9].textContent = `${sqr.rightMap} ${sqr.rightScore}`    
+        tileSquareEls[i*2+8].classList = `ts-sqr left`
+        tileSquareEls[i*2+8].classList += (` ${sqr.leftMap}`)
+        tileSquareEls[i*2+8].textContent = `${sqr.leftScore}`
+        tileSquareEls[i*2+9].classList = `ts-sqr right`
+        tileSquareEls[i*2+9].classList += (` ${sqr.rightMap}`)
+        tileSquareEls[i*2+9].textContent = `${sqr.rightScore}`
     })
 }
 
@@ -304,9 +312,10 @@ function endRound() {
 }
 
 function claimTile(player, tile) {
+    gameState.playersActed ++
     availableTiles[tile][`owner`] = player.id
     if (gameState.round > 1) {
-        gameState.currentPlayer = claimedTiles[gameState.playersActed + 1][`owner`]
+        gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
         gameState.phase = `placement`
         message = `Please choose where to place your tile.`
     } else if (gameState.currentPlayer === 3){
@@ -314,7 +323,6 @@ function claimTile(player, tile) {
     } else {
         gameState.currentPlayer ++
     }
-    gameState.playersActed ++
     if (gameState.playersActed === gameState.playerCount) {
         endRound()
      }
@@ -348,13 +356,12 @@ function handleClick (e) {
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(e) === true) {
-            console.log(e.target.id, claimedTiles.findIndex(findOwner))
             placeTile(e.target.id, claimedTiles.findIndex(findOwner))
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
     }
-    console.log(gameState.currentPlayer)
+    console.log(`CP: ${gameState.currentPlayer}, PA: ${gameState.playersActed}`)
     render()
 }
 
