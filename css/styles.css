@@ -4,8 +4,14 @@
     margin: 0;
 }
 
+.game-space {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 .board {
-    margin-inline: auto;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);

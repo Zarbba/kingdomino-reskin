@@ -188,6 +188,7 @@ const gameState = {
     round: 0,
     playerCount: 4,
     isEndGame: false,
+    isGameOver: false,
     currentPlayer: 0,
     phase: ``,
     playersActed: 0,
@@ -210,7 +211,7 @@ const ownerEL = document.querySelectorAll(`.owner`)
 
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
-    if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`)) {
+    if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`) || e.target.classList.contains(`discard`)) {
         handleClick(e)
     } else {
         return
@@ -306,8 +307,15 @@ function init() {
     message = `Please choose a tile to claim.`
     gameState.round = 1
     gameState.isEndGame = false
+    gameState.isGameOver = false
     gameState.phase = `selection`
     render()
+}
+
+function calculateScores() {
+    players.forEach((player) => {
+
+    })
 }
 
 function checkEndGame() {
@@ -319,6 +327,7 @@ function checkEndGame() {
 function endRound() {
     if (gameState.isEndGame === true) {
         // calculateScores()
+        gameState.isGameOver = true
         return
     } else {
         gameState.round ++
@@ -352,7 +361,7 @@ function claimTile(player, tile) {
      }
 }
 
-function checkUp(sqr) {
+function validateUp(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
         players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -363,7 +372,7 @@ function checkUp(sqr) {
     }
 }
 
-function checkDown(sqr) {
+function validateDown(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
         players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -374,7 +383,7 @@ function checkDown(sqr) {
     }
 }
 
-function checkLeft(sqr) {
+function validateLeft(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
         players[gameState.currentPlayer].board[sqr - 2][0] === `h`
@@ -383,7 +392,7 @@ function checkLeft(sqr) {
     }
 }
 
-function checkRight(sqr) {
+function validateRight(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
         players[gameState.currentPlayer].board[sqr + 1][0] === `h`
@@ -409,52 +418,52 @@ function checkValidPlacement(sqr) {
         sqr === 17 ||
         sqr === 18
     ) {
-        return checkUp(sqr) ||
-        checkDown(sqr) ||
-        checkRight(sqr) ||
-        checkLeft(sqr)
+        return validateUp(sqr) ||
+        validateDown(sqr) ||
+        validateRight(sqr) ||
+        validateLeft(sqr)
     } else if (sqr === 1) {
-        return checkDown(sqr) ||
-        checkRight(sqr)
+        return validateDown(sqr) ||
+        validateRight(sqr)
     } else if (sqr === 4) {
-        return checkDown(sqr) ||
-        checkLeft(sqr)
+        return validateDown(sqr) ||
+        validateLeft(sqr)
     } else if (sqr === 21) {
-        return checkUp(sqr) ||
-        checkRight(sqr)
+        return validateUp(sqr) ||
+        validateRight(sqr)
     } else if (sqr === 24) {
-        return checkUp(sqr) ||
-        checkLeft(sqr)
+        return validateUp(sqr) ||
+        validateLeft(sqr)
     } else if (
         sqr === 6 ||
         sqr === 11 ||
         sqr === 16
     ) {
-        return checkUp(sqr) || 
-        checkDown(sqr) || 
-        checkRight(sqr)
+        return validateUp(sqr) || 
+        validateDown(sqr) || 
+        validateRight(sqr)
     } else if (
         sqr === 9 ||
         sqr === 14 ||
         sqr === 19
     ) {
-       return checkUp(sqr) ||
-        checkDown(sqr) ||
-        checkLeft(sqr)
+       return validateUp(sqr) ||
+        validateDown(sqr) ||
+        validateLeft(sqr)
     } else if (
         sqr === 2 ||
         sqr === 3
     ) {
-        return checkRight(sqr) ||
-        checkDown(sqr) ||
-        checkLeft(sqr)
+        return validateRight(sqr) ||
+        validateDown(sqr) ||
+        validateLeft(sqr)
     } else if (
         sqr === 22 ||
         sqr === 23
     ) {
-        return checkRight(sqr) ||
-        checkUp(sqr) ||
-        checkLeft(sqr)
+        return validateRight(sqr) ||
+        validateUp(sqr) ||
+        validateLeft(sqr)
     }
 }
 
@@ -469,12 +478,22 @@ function placeTile(tile, id) {
     gameState.phase = `selection`
 }
 
+function discardTile() {
+    message = `Please choose a tile to claim.`
+    gameState.phase = `selection`
+}
+
 function handleClick (e) {
-    if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
+    if (gameState.isGameOver === true) {
+        return
+    }
+    if (gameState.phase === `placement` && e.target.classList.contains(`discard`)) {
+        discardTile()
+    } else if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
         if (availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`] === undefined) {
             claimTile(players[gameState.currentPlayer], Number(e.target.parentNode.id)-boardCoef)
         } else {
-            message = `That tile has already been claimed by player ${availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`]+1}. Please choose a different tile.`
+            message = `That tile has already been claimed by player ${availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`] + 1}. Please choose a different tile.`
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(Number(e.target.id)) === true) {
