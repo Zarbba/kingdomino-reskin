@@ -8,7 +8,43 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Space Domino</h1>
+    <header>
+        <h1>Space Domino</h1>
+        <nav>Rules</nav>
+    </header>
+    <aside class="rules hidden">
+        <h2>Game phases:</h2>
+        <p>
+            On each turn a player goes completes two phases; placement and selection.
+            (On the first turn there is no placement phase)
+        </p>
+        <h2>Placement phase:</h2>
+         <p>
+            Choose a location to place your tile by clicking on a square in your board.
+            Tiles must be placed so at least one half is touching either your home square or another square of a matching colour.
+            You can rotate tiles by pressing the "Rotate Tile" button.
+            If you are unable to place a tile for any reason, you can discard it by pressing the "Discard Tile" button.
+        </p>
+        <h2>Selection phase:</h2>
+        <p>
+            Claim a tile from the available tile display by clicking on the tile you wish to claim.
+            Tiles are organised from least to most valuable with the least valuable being at the top.
+            You can not claim a tile that has been claimed by another player.
+        </p>
+        <h2>Turn order:</h2>
+        <p>
+            On the first turn, a random player is chosen as the first player and each player proceeds in a clockwise direction from there.
+            On subsequent turns, the player who claimed the top tile in the "Claimed Tiles" display acts first, followed by the next tile in the display until all players have acted.
+        </p>
+        <h2>Scoring:</h2>
+        <p>
+            When there are no more tiles to place the game ends and the scores are computed.
+            Scoring works as follows:
+            Count each section of othoganlly contiguous matching colours. Multiply the number of these squares by the additive total of multipliers in the same zone.
+            Add all your points from each zone together to get your final total.
+            The player with the most points at the end of the game wins!
+        </p>
+    </aside>
     <p class="message"></p>
     <p class="player"></p>
     <section class="game-space">
@@ -88,7 +124,11 @@
             <div class="sqr" id="23"></div>
             <div class="sqr" id="24"></div>
         </section>
-        <button class="discard">Discard Tile</button>
+        <aside class="controls">
+            <button class="discard">Discard Tile</button>
+            <button class="rotate">Rotate Tile</button>
+            <button class="reset">Restart Game</button>
+        </aside>
     </section>    
 </body>
 </html>

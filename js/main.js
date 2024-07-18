@@ -211,12 +211,8 @@ const ownerEL = document.querySelectorAll(`.owner`)
 
 // -----Event Listeners-----
 gameSpaceEl.addEventListener(`click`, (e) => {
-    if (e.target.classList.contains(`sqr`) || e.target.classList.contains(`ts-sqr`) || e.target.classList.contains(`discard`)) {
         handleClick(e)
-    } else {
-        return
-    }
-})
+    })
 
 // -----Functions-----
 function makeDeck() {
@@ -484,6 +480,10 @@ function discardTile() {
 }
 
 function handleClick (e) {
+    if (e.target.classList.contains(`reset`)) {
+        init()
+        return
+    }
     if (gameState.isGameOver === true) {
         return
     }
