@@ -32,3 +32,31 @@
 .ts-sqr {
     width: 5rem;
 }
+
+.h {
+    background-color: red;
+}
+
+.y {
+    background-color: yellow;
+}
+
+.dg {
+    background-color: darkgreen;
+}
+
+.pg {
+    background-color: palegreen;
+}
+
+.b {
+    background-color: blue;
+}
+
+.bl {
+    background-color: black;
+}
+
+.br {
+    background-color: brown;
+}

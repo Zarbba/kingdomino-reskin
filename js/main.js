@@ -252,7 +252,9 @@ function reduceDeck() {
 
 function renderBoard() {
     players[gameState.currentPlayer].board.forEach((sqr, i) =>{
-        boardSquareEls[i].textContent = `${sqr[0]} ${sqr[1]}`
+        boardSquareEls[i].classList = (`sqr`)
+        boardSquareEls[i].classList += (` ${sqr[0]}`)
+        boardSquareEls[i].textContent = `${sqr[1]}`
     })
 }
 
@@ -304,7 +306,7 @@ function endRound() {
 function claimTile(player, tile) {
     availableTiles[tile][`owner`] = player.id
     if (gameState.round > 1) {
-        gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
+        gameState.currentPlayer = claimedTiles[gameState.playersActed + 1][`owner`]
         gameState.phase = `placement`
         message = `Please choose where to place your tile.`
     } else if (gameState.currentPlayer === 3){
@@ -352,6 +354,7 @@ function handleClick (e) {
             message = `That tile placement is not legal. Please choose another location.`
         }
     }
+    console.log(gameState.currentPlayer)
     render()
 }
 
