@@ -192,6 +192,9 @@ const gameState = {
     phase: ``,
     playersActed: 0,
 }
+
+const boardCoef = 25 //  This number is used to subtract modify the class of tile selectors in html to match them with indexes in JS
+
 // -----Variables-----
 let deck
 let message
@@ -234,6 +237,7 @@ function chooseStartPlayer() {
 function updateTileSelector() {
     if (gameState.round > 1) {
         claimedTiles.push(availableTiles[0],availableTiles[1],availableTiles[2],availableTiles[3],)
+        console.log(claimedTiles)
     }
     availableTiles.splice(0, 4)
     availableTiles.push(deck[0], deck[1], deck[2], deck[3])
@@ -312,10 +316,13 @@ function endRound() {
 }
 
 function claimTile(player, tile) {
-    gameState.playersActed ++
+        gameState.playersActed ++
     availableTiles[tile][`owner`] = player.id
     if (gameState.round > 1) {
-        gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
+        console.log(claimedTiles)
+        if (gameState.playersActed < 4) {
+            gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
+        }
         gameState.phase = `placement`
         message = `Please choose where to place your tile.`
     } else if (gameState.currentPlayer === 3){
@@ -329,9 +336,7 @@ function claimTile(player, tile) {
 }
 
 function checkValidPlacement(sqr) {
-    console.log(sqr)
-    console.log(gameState.currentPlayer)
-    console.log(players[gameState.currentPlayer].board[sqr - 5])
+    // console.log(players[gameState.currentPlayer].board[sqr - 5][0])
     // if (
     //     players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
     //     players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
@@ -366,9 +371,9 @@ function placeTile(tile, id) {
 function handleClick (e) {
     if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
         if (availableTiles[e.target.parentNode.id-25][`owner`] === undefined) {
-            claimTile(players[gameState.currentPlayer], e.target.parentNode.id-25)
+            claimTile(players[gameState.currentPlayer], e.target.parentNode.id-boardCoef)
         } else {
-            message = `That tile has already been claimed by player ${availableTiles[e.target.parentNode.id-25][`owner`]+1}. Please choose a different tile.`
+            message = `That tile has already been claimed by player ${availableTiles[e.target.parentNode.id-boardCoef][`owner`]+1}. Please choose a different tile.`
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(e.target.id) === true) {
