@@ -259,13 +259,17 @@ function renderCurrentTile() {
 
 function resetGameState() {
     message = `Please choose a tile to claim.`
-    gameState.winner = 4
+    gameState.winner = [1]
     gameState.round = 1
     gameState.isEndGame = false
     gameState.isGameOver = false
     gameState.phase = `selection`
     availableTiles = []
     claimedTiles = []
+    // players[0].score = 24
+    // players[1].score = 50
+    // players[2].score = 48
+    // players[3].score = 48
     clearPlayerBoards()
 }
 
@@ -301,8 +305,13 @@ function checkEndGame() {
 function endRound() {
     if (gameState.isEndGame === true) {
         // calculateScores()
+        checkWinner()
         gameState.isGameOver = true
-        message = `The game ended with a victory for player ${gameState.winner + 1}`
+        if (gameState.winner.length === 1) {
+            message = `The game ended with a victory for player ${Number(gameState.winner) + 1}`
+        } else if (gameState.winner.length > 1) {
+            message = `The game ended in a tie between the following players: ${gameState.winner}`
+        }
         playerEl.classList.toggle(`hidden`)
         return
     } else {
@@ -483,6 +492,17 @@ function discardTile() {
     }
 }
     
+function checkWinner() {
+    players.forEach((player) => {
+        if (player.id === gameState.winner[0]) {
+            gameState.winner[0] = [player.id]
+        } else if (player.score - players[gameState.winner[0]].score > 0) {
+            gameState.winner = [player.id]
+        } else if (player.score - players[gameState.winner[0]].score === 0) {
+            gameState.winner.push(player.id)
+        }
+    })
+}
 
 function handleClick (e) {
     if (e.target.classList.contains(`rules-button`)) {
