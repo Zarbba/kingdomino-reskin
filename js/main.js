@@ -112,12 +112,16 @@ const gameState = {
 }
 
 const boardCoef = 25 //  This number is used to modify the class of tile selectors in html to match them with indexes in JS
+const tileTypes = [`bl`, `b`, `pg`, `dg`, `y`, `br`]
 
 // -----Variables-----
 let deck
 let message
 let availableTiles
 let claimedTiles
+let sizeCounter = 0
+let multiCounter = 0
+let results = []
 
 // -----Cached DOM Elements-----
 const gameSpaceEl = document.querySelector(`.game-space`)
@@ -137,6 +141,103 @@ gameSpaceEl.addEventListener(`click`, (e) => {
     })
 
 // -----Functions-----
+function checkZones(board, x, y, type) {
+    if (checkValid(x, y) === false) {
+        return sizeCounter
+    }
+    if (checkMatching(board, x, y, type) === false) {
+        return sizeCounter
+    }
+    setCounted(board, x ,y)
+    checkZones(board, x + 1, y, type)
+    checkZones(board, x - 1, y, type)
+    checkZones(board, x , y + 1, type)
+    checkZones(board, x , y - 1, type)
+}
+
+function setCounted (board, x, y) {
+    board[y][x][0] = `d`
+    sizeCounter ++
+    multiCounter += board[y][x][1]
+}
+
+function checkMatching (board, x, y, type) {
+    if (board[y][x][0] === type){
+        return true
+    } else {
+        return false
+    }
+}
+
+function checkValid (x, y) {
+    if (x >= 0 && x <= 4 && y >= 0 && y <= 4) {
+        return true
+    } else {
+        return false
+    }
+}
+
+function findValidTarget(board, targetList) {
+    let target = ``
+    board.forEach((row) => { 
+        row.forEach((sqr) => {
+            if (
+                sqr[0] === targetList[0] ||
+                sqr[0] === targetList[1] ||
+                sqr[0] === targetList[2] ||
+                sqr[0] === targetList[3] ||
+                sqr[0] === targetList[4] ||
+                sqr[0] === targetList[5]
+            ) { 
+                target = sqr[0]
+            }
+        })
+    })
+    return target
+}
+
+function generateResults(board) {
+    while (findValidTarget(board, tileTypes) !== ``) {
+    board.forEach((row, i) => {
+        row.forEach((sqr, k) => {
+            checkZones(board, i, k, findValidTarget(board, tileTypes))
+            if (sizeCounter !== 0) {
+                results.push({
+                    size: sizeCounter,
+                    multi: multiCounter
+            })
+                sizeCounter = 0
+                multiCounter = 0
+            }
+        })
+    })
+    }
+}
+
+function translateBoard(board) {
+    let twoDBoard = [
+        [],
+        [],
+        [],
+        [],
+        [],
+    ]
+    board.forEach((sqr, i) => {
+        if (i <= 4) {
+            twoDBoard[0].push(sqr)
+        } else if (i <= 9 ) {
+            twoDBoard[1].push(sqr)
+        } else if (i <= 14 ) {
+            twoDBoard[2].push(sqr)
+        } else if (i <= 19 ) {
+            twoDBoard[3].push(sqr)
+        } else if (i <= 24 ) {
+            twoDBoard[4].push(sqr)
+        }
+    })
+    return twoDBoard
+}
+
 function makeDeck() {
     deck = structuredClone(tiles)
     shuffleDeck() 
@@ -259,18 +360,18 @@ function renderCurrentTile() {
 
 function resetGameState() {
     message = `Please choose a tile to claim.`
-    gameState.winner = [1]
+    gameState.winner = [0]
     gameState.round = 1
     gameState.isEndGame = false
     gameState.isGameOver = false
     gameState.phase = `selection`
     availableTiles = []
     claimedTiles = []
-    // players[0].score = 24
-    // players[1].score = 50
-    // players[2].score = 48
-    // players[3].score = 48
+    sizeCounter = 0
+    multiCounter = 0
+    results = []
     clearPlayerBoards()
+    players.forEach((player) => player.score = 0)
 }
 
 function render() {
@@ -286,13 +387,12 @@ function init() {
     chooseStartPlayer()
     updateTileSelector()
     reduceDeck()
-    // deck.splice(0, 44)
     render()
 }
 
-function calculateScores() {
-    players.forEach((player) => {
-
+function calculateScores(array, player) {
+    array.forEach((zone) => {
+        player.score += zone.size * zone.multi
     })
 }
 
@@ -304,13 +404,17 @@ function checkEndGame() {
 
 function endRound() {
     if (gameState.isEndGame === true) {
-        // calculateScores()
+        players.forEach((player) => {
+            generateResults(translateBoard(player.board))
+            calculateScores(results, player)
+        })
         checkWinner()
         gameState.isGameOver = true
         if (gameState.winner.length === 1) {
             message = `The game ended with a victory for player ${Number(gameState.winner) + 1}`
         } else if (gameState.winner.length > 1) {
-            message = `The game ended in a tie between the following players: ${gameState.winner}`
+            let winners = gameState.winner.map((value) => Number(value) + 1)
+            message = `The game ended in a tie between the following players: ${winners.join(`, `)}`
         }
         playerEl.classList.toggle(`hidden`)
         return
@@ -561,4 +665,3 @@ init()
 //         space = [`h`, 0]
 //     }
 // })
-
