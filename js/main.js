@@ -516,9 +516,9 @@ function placeTile(tile, id) {
             gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
             gameState.phase = `placement`
             message = `Please choose where to place your tile.`
-            if (gameState.playersActed === gameState.playerCount) {
+        }
+        if (gameState.playersActed === gameState.playerCount) {
                 endRound()            
-            }
         }
     }
 }
