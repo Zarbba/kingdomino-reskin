@@ -13,10 +13,11 @@
   
 body {
     font-family: Freedom, system-ui, sans-serif;
-    background-color: black;
+    background-image: url('../assets/images/bg.webp'); 
+    background-position: cover;
+    background-size: cover;   
     color: greenyellow;
     text-shadow: .1rem .2rem darkblue;
-    padding: .5rem;
 }
 
 h1 {
@@ -32,6 +33,13 @@ h2 {
 h3 {
     text-align: center;
     font-size: 1.5rem;
+    text-shadow: .1rem .1rem darkblue;
+}
+
+button {
+    background-color: black;
+    font-family: Freedom, system-ui, sans-serif;
+    color: yellowgreen;
     text-shadow: .1rem .1rem darkblue;
 }
 
@@ -53,6 +61,7 @@ h3 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    row-gap: 1rem;
 }
 
 .this-turn {

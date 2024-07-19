@@ -244,6 +244,18 @@ function updateTileSelector() {
     sortTiles(availableTiles)
 }
 
+function clearPlayerBoards() {
+    players.forEach((player) => {
+        player.board.forEach((space, k) => {
+            if (k !== 12) {
+                space = [``, 0]   
+            } else {
+                space = [`h`, 0]
+            }
+        })
+    })
+}
+
 function sortTiles(array) {
     array.sort((a, b) => {
         return a.id-b.id
@@ -255,7 +267,7 @@ function reduceDeck() {
 }
 
 function renderBoard() {
-    players[gameState.currentPlayer].board.forEach((sqr, i) =>{
+    players[gameState.currentPlayer].board.forEach((sqr, i) => {
         boardSquareEls[i].classList = `sqr`
         boardSquareEls[i].classList += ` ${sqr[0]}`
         boardSquareEls[i].textContent = `${sqr[1]}`
@@ -270,15 +282,22 @@ function renderMessages() {
 function renderTileSelector() {
     availableTiles.forEach((sqr, i) => {
         ownerEL[i].textContent = ``
-        if (sqr.owner !== undefined) {
-            ownerEL[i].textContent = `Claimed by player ${sqr.owner + 1}`
+        if (gameState.isEndGame === false) {
+            if (sqr.owner !== undefined) {
+                ownerEL[i].textContent = `Claimed by player ${sqr.owner + 1}`
+            }
+            tileSquareEls[i*2].classList = `ts-sqr left`
+            tileSquareEls[i*2].classList += ` ${sqr.leftMap}`
+            tileSquareEls[i*2].textContent = `${sqr.leftScore}`
+            tileSquareEls[i*2+1].classList = `ts-sqr right`
+            tileSquareEls[i*2+1].classList += ` ${sqr.rightMap}`
+            tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
+        } else {
+            tileSquareEls[i*2].classList = `ts-sqr left`
+            tileSquareEls[i*2].textContent = ``
+            tileSquareEls[i*2+1].classList = `ts-sqr right`
+            tileSquareEls[i*2+1].textContent = ``
         }
-        tileSquareEls[i*2].classList = `ts-sqr left`
-        tileSquareEls[i*2].classList += ` ${sqr.leftMap}`
-        tileSquareEls[i*2].textContent = `${sqr.leftScore}`
-        tileSquareEls[i*2+1].classList = `ts-sqr right`
-        tileSquareEls[i*2+1].classList += ` ${sqr.rightMap}`
-        tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
     })
 }
 
@@ -298,6 +317,17 @@ function renderCurrentTile() {
     }
 }
 
+function resetGameState() {
+    message = `Please choose a tile to claim.`
+    gameState.round = 1
+    gameState.isEndGame = false
+    gameState.isGameOver = false
+    gameState.phase = `selection`
+    availableTiles = []
+    claimedTiles = []
+    clearPlayerBoards()
+}
+
 function render() {
     renderBoard()
     renderMessages()
@@ -306,17 +336,12 @@ function render() {
 }
 
 function init() {
-    message = `Please choose a tile to claim.`
-    gameState.round = 1
-    gameState.isEndGame = false
-    gameState.isGameOver = false
-    gameState.phase = `selection`
-    availableTiles = []
-    claimedTiles = []
+    resetGameState()
     makeDeck()
     chooseStartPlayer()
     updateTileSelector()
     reduceDeck()
+    deck.splice(0, 44)
     render()
 }
 
@@ -411,6 +436,7 @@ function validateRight(sqr) {
 function checkValidPlacement(sqr) {
     if (
         players[gameState.currentPlayer].board[sqr][0] !== `` ||
+        players[gameState.currentPlayer].board[sqr - 1][0] !== `` ||
         sqr === 0 ||
         sqr === 5 ||
         sqr === 10 ||
@@ -481,8 +507,20 @@ function findOwner(tile) {
 function placeTile(tile, id) {
     players[gameState.currentPlayer].board[tile] = [claimedTiles[id].rightMap, claimedTiles[id].rightScore]
     players[gameState.currentPlayer].board[tile-1] = [claimedTiles[id].leftMap, claimedTiles[id].leftScore]
-    message = `Please choose a tile to claim.`
-    gameState.phase = `selection`
+    if (gameState.isEndGame === false) {
+        message = `Please choose a tile to claim.`
+        gameState.phase = `selection`
+    } else {
+        gameState.playersActed ++
+        if (gameState.playersActed < 4) {
+            gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
+            gameState.phase = `placement`
+            message = `Please choose where to place your tile.`
+            if (gameState.playersActed === gameState.playerCount) {
+                endRound()            
+            }
+        }
+    }
 }
 
 function discardTile() {
@@ -494,11 +532,9 @@ function handleClick (e) {
     if (e.target.classList.contains(`reset`)) {
         init()
         return
-    }
-    if (gameState.isGameOver === true) {
+    } else if (gameState.isGameOver === true) {
         return
-    }
-    if (gameState.phase === `placement` && e.target.classList.contains(`discard`)) {
+    } else if (gameState.phase === `placement` && e.target.classList.contains(`discard`)) {
         discardTile()
     } else if (gameState.phase === `selection` && e.target.classList.contains(`ts-sqr`)) {
         if (availableTiles[Number(e.target.parentNode.id)-boardCoef][`owner`] === undefined) {
