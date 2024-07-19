@@ -282,7 +282,7 @@ function init() {
     chooseStartPlayer()
     updateTileSelector()
     reduceDeck()
-    deck.splice(0, 44)
+    // deck.splice(0, 44)
     render()
 }
 
@@ -485,6 +485,10 @@ function discardTile() {
     
 
 function handleClick (e) {
+    if (e.target.classList.contains(`rules-button`)) {
+        rulesEl.classList.toggle(`hidden`)
+        return
+    }
     if (e.target.classList.contains(`reset`)) {
         init()
         return
