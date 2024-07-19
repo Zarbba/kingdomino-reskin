@@ -50,133 +50,53 @@ const tiles = [
 {id: 48, leftMap: `y`, rightMap: `bl`, leftScore: 0, rightScore: 3,},
 ]
 
+const testBoard = [        
+    [`pg`, 0],
+    [`pg`, 1],
+    [`pg`, 0],
+    [`y`, 0],
+    [`bl`, 3],
+    [`pg`, 0],
+    [`dg`, 0],
+    [`dg`, 1],
+    [`br`, 0],
+    [`b`, 1],
+    [`b`, 0],
+    [`b`, 1],
+    [`h`, 0],
+    [`pg`, 1],
+    [`pg`, 0],
+    [`pg`, 1],
+    [`br`, 0],
+    [`br`, 0],
+    [`bl`, 2],
+    [`bl`, 0],
+    [`br`, 1],
+    [`b`, 0],
+    [`b`, 2],
+    [`b`, 0],
+    [`y`, 0],
+]
+
 const players = [
     {
         id: 0,
         name: ``,
-        board: [
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [`h`, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        ],
         score: 0,
     },
     {
         id: 1,
         name: ``,
-        board: [
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [`h`, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        ],
         score: 0,
     },  
     {
         id: 2,
         name: ``,
-        board: [
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [`h`, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        ],
         score: 0,
     },  
     {
         id: 3,
         name: ``,
-        board: [
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [`h`, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        [``, 0],
-        ],
         score: 0,
     },
 ]
@@ -246,13 +166,33 @@ function updateTileSelector() {
 
 function clearPlayerBoards() {
     players.forEach((player) => {
-        player.board.forEach((space, k) => {
-            if (k !== 12) {
-                space = [``, 0]   
-            } else {
-                space = [`h`, 0]
-            }
-        })
+        player.board = [     
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [`h`, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+            [``, 0],
+        ]
     })
 }
 
@@ -319,6 +259,7 @@ function renderCurrentTile() {
 
 function resetGameState() {
     message = `Please choose a tile to claim.`
+    gameState.winner = 4
     gameState.round = 1
     gameState.isEndGame = false
     gameState.isGameOver = false
@@ -361,6 +302,7 @@ function endRound() {
     if (gameState.isEndGame === true) {
         // calculateScores()
         gameState.isGameOver = true
+        message = `The game ended with a victory for player ${gameState.winner}`
         return
     } else {
         gameState.round ++
@@ -568,5 +510,17 @@ init()
 //     tileSquareEls[i*2+9].classList = `ts-sqr right`
 //     tileSquareEls[i*2+9].classList += ` ${sqr.rightMap}`
 //     tileSquareEls[i*2+9].textContent = `${sqr.rightScore}`
+// })
+
+// player.board.forEach((space, k) => {
+//     // console.log(`space: ${space}`) 
+//     // console.log(`k:${player.board[k]}`)
+//     if (k !== 12) {
+//         space.splice(0, 2)
+//         space = [``, 0]   
+//     } else {
+//         space.splice(0, 2)
+//         space = [`h`, 0]
+//     }
 // })
 
