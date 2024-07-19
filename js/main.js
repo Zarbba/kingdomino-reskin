@@ -302,7 +302,8 @@ function endRound() {
     if (gameState.isEndGame === true) {
         // calculateScores()
         gameState.isGameOver = true
-        message = `The game ended with a victory for player ${gameState.winner}`
+        message = `The game ended with a victory for player ${gameState.winner + 1}`
+        playerEl.classList.toggle(`hidden`)
         return
     } else {
         gameState.round ++
@@ -466,9 +467,22 @@ function placeTile(tile, id) {
 }
 
 function discardTile() {
-    message = `Please choose a tile to claim.`
-    gameState.phase = `selection`
+    if (gameState.isEndGame === false) {
+        message = `Please choose a tile to claim.`
+        gameState.phase = `selection`
+    } else {
+        gameState.playersActed ++
+        if (gameState.playersActed < 4) {
+            gameState.currentPlayer = claimedTiles[gameState.playersActed][`owner`]
+            gameState.phase = `placement`
+            message = `Please choose where to place your tile.`
+        }
+        if (gameState.playersActed === gameState.playerCount) {
+                endRound()            
+        }
+    }
 }
+    
 
 function handleClick (e) {
     if (e.target.classList.contains(`reset`)) {
