@@ -181,9 +181,6 @@ const players = [
     },
 ]
 
-const availableTiles = []
-const claimedTiles = []
-
 const gameState = {
     round: 0,
     playerCount: 4,
@@ -199,6 +196,8 @@ const boardCoef = 25 //  This number is used to modify the class of tile selecto
 // -----Variables-----
 let deck
 let message
+let availableTiles
+let claimedTiles
 
 // -----Cached DOM Elements-----
 const gameSpaceEl = document.querySelector(`.game-space`)
@@ -219,7 +218,7 @@ gameSpaceEl.addEventListener(`click`, (e) => {
 
 // -----Functions-----
 function makeDeck() {
-    deck = [...tiles]
+    deck = structuredClone(tiles)
     shuffleDeck() 
 }
 
@@ -281,15 +280,6 @@ function renderTileSelector() {
         tileSquareEls[i*2+1].classList += ` ${sqr.rightMap}`
         tileSquareEls[i*2+1].textContent = `${sqr.rightScore}`
     })
-    claimedTiles.forEach((sqr, i) =>{
-        ownerEL[i + 4].textContent = `Claimed by player ${sqr.owner + 1}`
-        tileSquareEls[i*2+8].classList = `ts-sqr left`
-        tileSquareEls[i*2+8].classList += ` ${sqr.leftMap}`
-        tileSquareEls[i*2+8].textContent = `${sqr.leftScore}`
-        tileSquareEls[i*2+9].classList = `ts-sqr right`
-        tileSquareEls[i*2+9].classList += ` ${sqr.rightMap}`
-        tileSquareEls[i*2+9].textContent = `${sqr.rightScore}`
-    })
 }
 
 function renderCurrentTile() {
@@ -316,15 +306,17 @@ function render() {
 }
 
 function init() {
-    makeDeck()
-    chooseStartPlayer()
-    updateTileSelector()
-    reduceDeck()
     message = `Please choose a tile to claim.`
     gameState.round = 1
     gameState.isEndGame = false
     gameState.isGameOver = false
     gameState.phase = `selection`
+    availableTiles = []
+    claimedTiles = []
+    makeDeck()
+    chooseStartPlayer()
+    updateTileSelector()
+    reduceDeck()
     render()
 }
 
@@ -529,3 +521,16 @@ init()
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
 // Font found here: https://www.fontspace.com/freedom-font-f14832
 // Images found here: https://www.nasa.gov/images/
+
+// -----Code Graveyard-----
+
+// claimedTiles.forEach((sqr, i) =>{
+//     ownerEL[i + 4].textContent = `Claimed by player ${sqr.owner + 1}`
+//     tileSquareEls[i*2+8].classList = `ts-sqr left`
+//     tileSquareEls[i*2+8].classList += ` ${sqr.leftMap}`
+//     tileSquareEls[i*2+8].textContent = `${sqr.leftScore}`
+//     tileSquareEls[i*2+9].classList = `ts-sqr right`
+//     tileSquareEls[i*2+9].classList += ` ${sqr.rightMap}`
+//     tileSquareEls[i*2+9].textContent = `${sqr.rightScore}`
+// })
+
