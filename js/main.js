@@ -50,34 +50,6 @@ const tiles = [
 {id: 48, leftMap: `y`, rightMap: `bl`, leftScore: 0, rightScore: 3,},
 ]
 
-const testBoard = [        
-    [`pg`, 0],
-    [`pg`, 1],
-    [`pg`, 0],
-    [`y`, 0],
-    [`bl`, 3],
-    [`pg`, 0],
-    [`dg`, 0],
-    [`dg`, 1],
-    [`br`, 0],
-    [`b`, 1],
-    [`b`, 0],
-    [`b`, 1],
-    [`h`, 0],
-    [`pg`, 1],
-    [`pg`, 0],
-    [`pg`, 1],
-    [`br`, 0],
-    [`br`, 0],
-    [`bl`, 2],
-    [`bl`, 0],
-    [`br`, 1],
-    [`b`, 0],
-    [`b`, 2],
-    [`b`, 0],
-    [`y`, 0],
-]
-
 const players = [
     {
         id: 0,
@@ -139,7 +111,7 @@ const currentTileEl = document.querySelector('.current-tile')
 gameSpaceEl.addEventListener(`click`, (e) => {
         handleClick(e)
     })
-
+    
 // -----Functions-----
 function checkZones(board, x, y, type) {
     if (checkValid(x, y) === false) {
@@ -665,3 +637,33 @@ init()
 //         space = [`h`, 0]
 //     }
 // })
+
+// const testBoard = [        
+//     [`pg`, 0],
+//     [`pg`, 1],
+//     [`pg`, 0],
+//     [`y`, 0],
+//     [`bl`, 3],
+//     [`pg`, 0],
+//     [`dg`, 0],
+//     [`dg`, 1],
+//     [`br`, 0],
+//     [`b`, 1],
+//     [`b`, 0],
+//     [`b`, 1],
+//     [`h`, 0],
+//     [`pg`, 1],
+//     [`pg`, 0],
+//     [`pg`, 1],
+//     [`br`, 0],
+//     [`br`, 0],
+//     [`bl`, 2],
+//     [`bl`, 0],
+//     [`br`, 1],
+//     [`b`, 0],
+//     [`b`, 2],
+//     [`b`, 0],
+//     [`y`, 0],
+// ]
+
+// deck.splice(0, 44)
