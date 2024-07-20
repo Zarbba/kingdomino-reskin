@@ -409,6 +409,8 @@ function resetGameState() {
     multiCounter = 0
     results = []
     clearPlayerBoards()
+    players[0].board = testBoard
+    players[3].board = testBoard
     players.forEach((player) => player.score = 0)
 }
 
