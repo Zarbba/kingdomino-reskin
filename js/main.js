@@ -1,31 +1,4 @@
 // -----Constants-----
-const testBoard = [        
-    [`pg`, 0],
-    [`pg`, 1],
-    [`pg`, 0],
-    [`y`, 0],
-    [`bl`, 3],
-    [`pg`, 0],
-    [`dg`, 0],
-    [`dg`, 1],
-    [`br`, 0],
-    [`b`, 1],
-    [`b`, 0],
-    [`b`, 1],
-    [`h`, 0],
-    [`pg`, 1],
-    [`pg`, 0],
-    [`pg`, 1],
-    [`br`, 0],
-    [`br`, 0],
-    [`bl`, 2],
-    [`bl`, 0],
-    [`br`, 1],
-    [`b`, 0],
-    [`b`, 2],
-    [`b`, 0],
-    [`y`, 0],
-]
 
 const tiles = [
 {id: 1, leftMap: `y`, rightMap: `y`, leftScore: 0, rightScore: 0,},
@@ -232,6 +205,7 @@ function findValidTarget(board, targetList) {
 }
 
 function generateResults(board) {
+    results = []
     while (findValidTarget(board, tileTypes) !== ``) {
     board.forEach((row, i) => {
         row.forEach((sqr, k) => {
@@ -410,8 +384,6 @@ function resetGameState() {
     multiCounter = 0
     results = []
     clearPlayerBoards()
-    players[0].board = testBoard
-    players[3].board = testBoard
     players.forEach((player) => player.score = 0)
 }
 
@@ -428,7 +400,6 @@ function init() {
     chooseStartPlayer()
     updateTileSelector()
     reduceDeck()
-    deck.splice(0, 44)
     render()
 }
 
@@ -450,7 +421,6 @@ function endRound() {
             generateResults(translateBoard(player.board))
             calculateScores(results, player)
             results = []
-            console.log(player.score)
         })
         checkWinner()
         gameState.isGameOver = true
@@ -620,13 +590,13 @@ function discardTile() {
 function checkWinner() {
     players.forEach((player) => {
         if (player.id === gameState.winner[0]) {
-            gameState.winner[0] = [player.id]
+            return
         } else if (player.score - players[gameState.winner[0]].score > 0) {
             gameState.winner = [player.id]
         } else if (player.score - players[gameState.winner[0]].score === 0) {
             gameState.winner.push(player.id)
         }
-    })
+    }) 
 }
 
 function handleClick (e) {
@@ -660,6 +630,8 @@ function handleClick (e) {
 }
 
 init()
+// console.log(results)
+// console.log(players[3].score)
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
 // Font found here: https://www.fontspace.com/freedom-font-f14832
@@ -688,3 +660,33 @@ init()
 //         space = [`h`, 0]
 //     }
 // })
+
+// const testBoard = [        
+//     [`pg`, 0],
+//     [`pg`, 1],
+//     [`pg`, 0],
+//     [`y`, 0],
+//     [`bl`, 3],
+//     [`pg`, 0],
+//     [`dg`, 0],
+//     [`dg`, 1],
+//     [`br`, 0],
+//     [`b`, 1],
+//     [`b`, 0],
+//     [`b`, 1],
+//     [`h`, 0],
+//     [`pg`, 1],
+//     [`pg`, 0],
+//     [`pg`, 1],
+//     [`br`, 0],
+//     [`br`, 0],
+//     [`bl`, 2],
+//     [`bl`, 0],
+//     [`br`, 1],
+//     [`b`, 0],
+//     [`b`, 2],
+//     [`b`, 0],
+//     [`y`, 0],
+// ]
+
+// deck.splice(0, 44)
