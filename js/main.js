@@ -435,7 +435,6 @@ function init() {
 function calculateScores(array, player) {
     array.forEach((zone) => {
         player.score += zone.size * zone.multi
-        results = []
     })
 }
 
@@ -450,6 +449,7 @@ function endRound() {
         players.forEach((player) => {
             generateResults(translateBoard(player.board))
             calculateScores(results, player)
+            results = []
             console.log(player.score)
         })
         checkWinner()
