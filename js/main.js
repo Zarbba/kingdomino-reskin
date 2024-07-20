@@ -448,6 +448,7 @@ function endRound() {
         players.forEach((player) => {
             generateResults(translateBoard(player.board))
             calculateScores(results, player)
+            console.log(player.score)
         })
         checkWinner()
         gameState.isGameOver = true
