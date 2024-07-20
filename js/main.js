@@ -394,6 +394,7 @@ function renderCurrentTile() {
 }
 
 function resetGameState() {
+    playerEl.classList = `player`
     message = `Please choose a tile to claim.`
     gameState.winner = [0]
     gameState.round = 1
@@ -434,6 +435,7 @@ function init() {
 function calculateScores(array, player) {
     array.forEach((zone) => {
         player.score += zone.size * zone.multi
+        results = []
     })
 }
 
