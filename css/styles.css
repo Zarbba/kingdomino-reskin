@@ -118,7 +118,13 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: .5rem;
+}
+
+.current-tile-vert {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .sqr, .ts-sqr, .c-sqr {
