@@ -74,6 +74,32 @@ const players = [
     },
 ]
 
+const hValSquares = {
+    forbiddenSquares: [0, 5, 10, 15, 20],
+    allSquares: [7, 8, 13, 17, 18],
+    udrSquares: [6, 11, 16],
+    udlSquares: [9, 14, 19],
+    ldrSquares: [2, 3],
+    lurSquares: [22, 23],
+    drSquare: [1],
+    ldSquare: [4],
+    urSquare: [21],
+    luSquare: [24],
+}
+
+const vValSquares = {
+    forbiddenSquares: [0, 1, 2, 3, 4],
+    allSquares: [11, 13, 16, 17, 18],
+    udrSquares: [10, 15],
+    udlSquares: [14, 19],
+    ldrSquares: [6, 7, 8],
+    lurSquares: [21, 22, 23],
+    drSquare: [5],
+    ldSquare: [9],
+    urSquare: [20],
+    luSquare: [24],
+}
+
 const gameState = {
     round: 0,
     playerCount: 4,
@@ -82,20 +108,9 @@ const gameState = {
     currentPlayer: 0,
     phase: ``,
     playersActed: 0,
-    mod: 1,
-    valSquares : {
-        flipped: false,
-        forbiddenSquares: [0, 5, 10, 12, 13, 15, 20],
-        allSquares: [7, 8, 17, 18],
-        udrSquares: [6, 11, 16],
-        udlSquares: [9, 14, 19],
-        ldrSquares: [2, 3],
-        lurSquares: [22, 23],
-        drSquare: [1],
-        ldSquare: [4],
-        urSquare: [21],
-        luSquare: [24],
-    }
+    placementMod: 1,
+    vert: false,
+    valSquares : hValSquares,
 }
 
 const boardCoef = 25 //  This number is used to modify the class of tile selectors in html to match them with indexes in JS
@@ -129,14 +144,15 @@ gameSpaceEl.addEventListener(`click`, (e) => {
 // -----Functions-----
 function rotateTile() {
     currentTileEl.classList.toggle(`current-tile-vert`)
-    if (gameState.mod === 1) {
-        gameState.mod = 5
+    if (gameState.vert === false) {
+        gameState.placementMod = 5
         gameState.vert = true
-    } else if (gameState.mod === 5){
+        gameState.valSquares = vValSquares
+    } else if (gameState.vert === true){
         let flipCache
-        gameState.mod = 1
-        gameState.flipped = true
+        gameState.placementMod = 1
         gameState.vert = false
+        gameState.valSquares = hValSquares
         flipCache = {
             map: claimedTiles[claimedTiles.findIndex(findOwner)].leftMap,
             score: claimedTiles[claimedTiles.findIndex(findOwner)].leftScore,}
@@ -144,8 +160,6 @@ function rotateTile() {
         claimedTiles[claimedTiles.findIndex(findOwner)].leftScore = claimedTiles[claimedTiles.findIndex(findOwner)].rightScore
         claimedTiles[claimedTiles.findIndex(findOwner)].rightMap = flipCache.map
         claimedTiles[claimedTiles.findIndex(findOwner)].rightScore = flipCache.score
-        console.log(flipCache)
-        console.log(claimedTiles[claimedTiles.findIndex(findOwner)])
     }
 }
 
@@ -375,8 +389,6 @@ function resetGameState() {
     gameState.isEndGame = false
     gameState.isGameOver = false
     gameState.phase = `selection`
-    gameState.mod = 1
-    gameState.flipped = false
     gameState.vert = false
     availableTiles = []
     claimedTiles = []
@@ -464,40 +476,74 @@ function claimTile(player, tile) {
 }
 
 function validateUp(sqr) {
-    if (
-        players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr - 6][0] === `h`
+    if (gameState.vert === false) {
+        if (
+            players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+            players[gameState.currentPlayer].board[sqr - 5][0] === `h` ||
+            players[gameState.currentPlayer].board[sqr - 6][0] === `h`
+        ) {
+            return true
+        }
+    } else if (
+        players[gameState.currentPlayer].board[sqr - 10][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+        players[gameState.currentPlayer].board[sqr - 5][0] === `h`
     ) {
         return true
     }
 }
 
 function validateDown(sqr) {
-    if (
-        players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr + 4][0] === `h`
-    ) {
-        return true
+    if (gameState.vert === false) {
+        if (
+            players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+            players[gameState.currentPlayer].board[sqr + 5][0] === `h` ||
+            players[gameState.currentPlayer].board[sqr + 4][0] === `h`
+        ) {
+            return true
+        } else if (
+            players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr + 5][0] === `h`
+
+        ) {
+            return true
+        }
     }
 }
 
 function validateLeft(sqr) {
-    if (
-        players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr - 2][0] === `h`
+    if (gameState.vert === false) {
+
+        if (
+            players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+            players[gameState.currentPlayer].board[sqr - 2][0] === `h`
+        ) {
+            return true
+        }
+    } else if (
+        players[gameState.currentPlayer].board[sqr - 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+        players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].lefttMap ||
+        players[gameState.currentPlayer].board[sqr - 1][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr - 6][0] === `h`
     ) {
         return true
     }
 }
 
 function validateRight(sqr) {
-    if (
+    if (gameState.vert === false) {
+        if (
+            players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr + 1][0] === `h`
+        ) {
+            return true
+        }
+    } else if (
         players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr + 1][0] === `h`
+        players[gameState.currentPlayer].board[sqr - 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+        players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
+        players[gameState.currentPlayer].board[sqr - 4][0] === `h`
     ) {
         return true
     }
@@ -505,9 +551,9 @@ function validateRight(sqr) {
 
 function checkValidPlacement(sqr) {
     if (
+        gameState.valSquares.forbiddenSquares.includes(sqr) ||
         players[gameState.currentPlayer].board[sqr][0] !== `` ||
-        players[gameState.currentPlayer].board[sqr - gameState.mod][0] !== `` ||
-        gameState.valSquares.forbiddenSquares.includes(sqr)
+        players[gameState.currentPlayer].board[sqr - gameState.placementMod][0] !== ``
     ) {
         return false
     } else if (gameState.valSquares.allSquares.includes(sqr)) {
@@ -551,7 +597,6 @@ function findOwner(tile,) {
 }
 
 function placeTile(tile, id, mod) {
-    console.log(mod)
     players[gameState.currentPlayer].board[tile] = [claimedTiles[id].rightMap, claimedTiles[id].rightScore]
     players[gameState.currentPlayer].board[tile - mod] = [claimedTiles[id].leftMap, claimedTiles[id].leftScore]
     if (gameState.isEndGame === false) {
@@ -602,14 +647,12 @@ function checkWinner() {
 function handleClick (e) {
     if (e.target.classList.contains(`rules-button`)) {
         rulesEl.classList.toggle(`hidden`)
-        return
     }
     if (e.target.classList.contains(`reset`)) {
         init()
-        return
     } else if (gameState.isGameOver === true) {
         return
-    } else if (e.target.classList.contains(`rotate`)) {
+    } else if (e.target.classList.contains(`rotate`) && gameState.phase === `placement`) {
         rotateTile()
     } else if (gameState.phase === `placement` && e.target.classList.contains(`discard`)) {
         discardTile()
@@ -621,7 +664,7 @@ function handleClick (e) {
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(Number(e.target.id)) === true) {
-            placeTile(Number(e.target.id), claimedTiles.findIndex(findOwner), gameState.mod)
+            placeTile(Number(e.target.id), claimedTiles.findIndex(findOwner), gameState.placementMod)
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
