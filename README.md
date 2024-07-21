@@ -18,7 +18,7 @@ This project was created entirely ussing front-end web technologies including ja
 ## Next Steps
 ### Feature Enhancments
 1. Functionality for 2 and 3 players
-1. Tile rotation
+1. ~~Tile rotation~~
 1. Add the ability for users to input player names
 1. A scoreboard for the end game display
 ### Design Enhancments
