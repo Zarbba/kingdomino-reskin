@@ -100,9 +100,11 @@ const vValSquares = {
     luSquare: [24],
 }
 
+
 const gameState = {
     round: 0,
     playerCount: 4,
+    isPenultimateRound: false,
     isEndGame: false,
     isGameOver: false,
     currentPlayer: 0,
@@ -111,6 +113,7 @@ const gameState = {
     placementMod: 1,
     vert: false,
     valSquares : hValSquares,
+
 }
 
 const boardCoef = 25 //  This number is used to modify the class of tile selectors in html to match them with indexes in JS
@@ -142,6 +145,7 @@ gameSpaceEl.addEventListener(`click`, (e) => {
     })
     
 // -----Functions-----
+
 function rotateTile() {
     currentTileEl.classList.toggle(`current-tile-vert`)
     if (gameState.vert === false) {
@@ -386,10 +390,10 @@ function resetGameState() {
     message = `Please choose a tile to claim.`
     gameState.winner = [0]
     gameState.round = 1
+    gameState.isPenultimateRound = false,
     gameState.isEndGame = false
     gameState.isGameOver = false
     gameState.phase = `selection`
-    gameState.vert = false
     availableTiles = []
     claimedTiles = []
     sizeCounter = 0
@@ -423,7 +427,11 @@ function calculateScores(array, player) {
 
 function checkEndGame() {
     if (deck.length === 0) {
-        gameState.isEndGame = true
+        if (gameState.isPenultimateRound === true) {
+            gameState.isEndGame = true
+        } else {
+            gameState.isPenultimateRound = true
+        }
     }
 }
 
@@ -485,11 +493,15 @@ function validateUp(sqr) {
         ) {
             return true
         }
-    } else if (
-        players[gameState.currentPlayer].board[sqr - 10][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr - 5][0] === `h`
-    ) {
-        return true
+    } else if (gameState.vert === true) {
+        if (
+            players[gameState.currentPlayer].board[sqr - 10][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+            players[gameState.currentPlayer].board[sqr - 10][0] === `h`
+        ) {
+            return true
+        }
+    } else {
+        return false
     }
 }
 
@@ -502,13 +514,17 @@ function validateDown(sqr) {
             players[gameState.currentPlayer].board[sqr + 4][0] === `h`
         ) {
             return true
-        } else if (
+        } 
+        
+    } else if (gameState.vert === true) {
+        if (
             players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr + 5][0] === `h`
-
         ) {
             return true
         }
+    } else {
+        return false
     }
 }
 
@@ -521,13 +537,17 @@ function validateLeft(sqr) {
         ) {
             return true
         }
-    } else if (
-        players[gameState.currentPlayer].board[sqr - 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].lefttMap ||
-        players[gameState.currentPlayer].board[sqr - 1][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr - 6][0] === `h`
-    ) {
-        return true
+    } else if (gameState.vert === true) {
+        if (
+            players[gameState.currentPlayer].board[sqr - 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].lefttMap ||
+            players[gameState.currentPlayer].board[sqr - 1][0] === `h` ||
+            players[gameState.currentPlayer].board[sqr - 6][0] === `h`
+        ) {
+            return true
+        }
+    } else {
+        return false
     }
 }
 
@@ -539,13 +559,17 @@ function validateRight(sqr) {
         ) {
             return true
         }
-    } else if (
-        players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-        players[gameState.currentPlayer].board[sqr - 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
-        players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
-        players[gameState.currentPlayer].board[sqr - 4][0] === `h`
-    ) {
-        return true
+    } else if (gameState.vert === true) {
+        if (
+            players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
+            players[gameState.currentPlayer].board[sqr - 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
+            players[gameState.currentPlayer].board[sqr + 1][0] === `h` ||
+            players[gameState.currentPlayer].board[sqr - 4][0] === `h`
+        ) {
+            return true
+        }
+    } else {
+        return false
     }
 }
 
@@ -557,38 +581,92 @@ function checkValidPlacement(sqr) {
     ) {
         return false
     } else if (gameState.valSquares.allSquares.includes(sqr)) {
-        return validateUp(sqr) ||
-        validateDown(sqr) ||
-        validateRight(sqr) ||
-        validateLeft(sqr)
+        if (
+            validateUp(sqr) ||
+            validateDown(sqr) ||
+            validateRight(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.drSquare.includes(sqr)) {
-        return validateDown(sqr) ||
-        validateRight(sqr)
+        if (
+            validateDown(sqr) ||
+            validateRight(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.ldSquare.includes(sqr)) {
-        return validateDown(sqr) ||
-        validateLeft(sqr)
+        if (
+            validateDown(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.urSquare.includes(sqr)) {
-        return validateUp(sqr) ||
-        validateRight(sqr)
+        if (
+            validateUp(sqr) ||
+            validateRight(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.luSquare.includes(sqr)) {
-        return validateUp(sqr) ||
-        validateLeft(sqr)
+        if (
+            validateUp(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.udrSquares.includes(sqr)) {
-        return validateUp(sqr) || 
-        validateDown(sqr) || 
-        validateRight(sqr)
+        if (
+            validateUp(sqr) || 
+            validateDown(sqr) || 
+            validateRight(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.udlSquares.includes(sqr)) {
-       return validateUp(sqr) ||
-        validateDown(sqr) ||
-        validateLeft(sqr)
+       if (
+            validateUp(sqr) ||
+            validateDown(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.ldrSquares.includes(sqr)) {
-        return validateRight(sqr) ||
-        validateDown(sqr) ||
-        validateLeft(sqr)
+        if (
+            validateRight(sqr) ||
+            validateDown(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     } else if (gameState.valSquares.lurSquares.includes(sqr)) {
-        return validateRight(sqr) ||
-        validateUp(sqr) ||
-        validateLeft(sqr)
+        if (
+            validateRight(sqr) ||
+            validateUp(sqr) ||
+            validateLeft(sqr)
+        ) {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
@@ -672,9 +750,9 @@ function handleClick (e) {
     render()
 }
 
+// -----Game Start-----
 init()
-// console.log(results)
-// console.log(players[3].score)
+
 // -----References-----
 // Grabbed Fisher-Yates from here: https://www.squash.io/how-to-shuffle-a-javascript-array/
 // Font found here: https://www.fontspace.com/freedom-font-f14832
