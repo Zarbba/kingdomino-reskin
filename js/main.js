@@ -514,7 +514,6 @@ function validateDown(sqr) {
 
 function validateLeft(sqr) {
     if (gameState.verticalTile === false) {
-
         if (
             players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
             players[gameState.currentPlayer].board[sqr - 2][0] === `h`
@@ -524,7 +523,7 @@ function validateLeft(sqr) {
     } else if (gameState.verticalTile === true) {
         if (
             players[gameState.currentPlayer].board[sqr - 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
-            players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].lefttMap ||
+            players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
             players[gameState.currentPlayer].board[sqr - 1][0] === `h` ||
             players[gameState.currentPlayer].board[sqr - 6][0] === `h`
         ) {
