@@ -13,6 +13,7 @@ Game design: [Bruno Cathala](https://boardgamegeek.com/boardgamedesigner/1727/br
 </br>Images: [https://www.nasa.gov/images/](https://www.nasa.gov/images/)
 </br>Code resources: [MDN](https://developer.mozilla.org/en-US/), [Stack Overflow](https://stackoverflow.com/)
 </br>Spacial mention: [This creator](https://www.youtube.com/watch?v=a7qCVxq-dWE&ab_channel=CodingAdventures) who's explanation of the flood-fill algothrim was crucial for the success of the project.
+
 ## Technologies
 This project was created entirely ussing front-end web technologies including javaScript, CSS and HTML. I used VSCode for my text editor and combined both the Live Server plugin as well as nodemon in the terminal for testing.
 ## Next Steps

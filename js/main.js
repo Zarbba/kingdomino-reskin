@@ -74,7 +74,7 @@ const players = [
     },
 ]
 
-const hValSquares = {
+const horizontalValidationSquares = {
     forbiddenSquares: [0, 5, 10, 15, 20],
     allSquares: [7, 8, 13, 17, 18],
     udrSquares: [6, 11, 16],
@@ -87,7 +87,7 @@ const hValSquares = {
     luSquare: [24],
 }
 
-const vValSquares = {
+const verticalValidationSquares = {
     forbiddenSquares: [0, 1, 2, 3, 4],
     allSquares: [11, 13, 16, 17, 18],
     udrSquares: [10, 15],
@@ -100,7 +100,6 @@ const vValSquares = {
     luSquare: [24],
 }
 
-
 const gameState = {
     round: 0,
     playerCount: 4,
@@ -110,23 +109,26 @@ const gameState = {
     currentPlayer: 0,
     phase: ``,
     playersActed: 0,
-    placementMod: 1,
-    vert: false,
-    valSquares : hValSquares,
+    tilePlacementModifier: 1,
+    verticalTile: false,
+    validationSquares : horizontalValidationSquares,
 
 }
 
 const boardCoef = 25 //  This number is used to modify the class of tile selectors in html to match them with indexes in JS
-const tileTypes = [`bl`, `b`, `pg`, `dg`, `y`, `br`]
+const tileTypes = [`bl`, `b`, `pg`, `dg`, `y`, `br`] // This array lists all the possible tile types in the game
+// REVIEW - Change tile types to variables for easier maintence
+// REVIEW - Refactor boards to be 2D arrays instead of 1D
 
 // -----Variables-----
 let deck
 let message
 let availableTiles
 let claimedTiles
-let sizeCounter = 0
-let multiCounter = 0
-let results = []
+let scoringZoneSizeCounter = 0
+let scoringZoneMultiplierCounter = 0
+let scoringArray
+
 // -----Cached DOM Elements-----
 const gameSpaceEl = document.querySelector(`.game-space`)
 const boardSquareEls = document.querySelectorAll(`.sqr`)
@@ -148,100 +150,83 @@ gameSpaceEl.addEventListener(`click`, (e) => {
 
 function rotateTile() {
     currentTileEl.classList.toggle(`current-tile-vert`)
-    if (gameState.vert === false) {
-        gameState.placementMod = 5
-        gameState.vert = true
-        gameState.valSquares = vValSquares
-    } else if (gameState.vert === true){
-        let flipCache
-        gameState.placementMod = 1
-        gameState.vert = false
-        gameState.valSquares = hValSquares
-        flipCache = {
+    if (gameState.verticalTile === false) {
+        gameState.tilePlacementModifier = 5
+        gameState.verticalTile = true
+        gameState.validationSquares = verticalValidationSquares
+    } else if (gameState.verticalTile === true){
+        let tileFlipCache
+        gameState.tilePlacementModifier = 1
+        gameState.verticalTile = false
+        gameState.validationSquares = horizontalValidationSquares
+        tileFlipCache = {
             map: claimedTiles[claimedTiles.findIndex(findOwner)].leftMap,
             score: claimedTiles[claimedTiles.findIndex(findOwner)].leftScore,}
         claimedTiles[claimedTiles.findIndex(findOwner)].leftMap = claimedTiles[claimedTiles.findIndex(findOwner)].rightMap
         claimedTiles[claimedTiles.findIndex(findOwner)].leftScore = claimedTiles[claimedTiles.findIndex(findOwner)].rightScore
-        claimedTiles[claimedTiles.findIndex(findOwner)].rightMap = flipCache.map
-        claimedTiles[claimedTiles.findIndex(findOwner)].rightScore = flipCache.score
+        claimedTiles[claimedTiles.findIndex(findOwner)].rightMap = tileFlipCache.map
+        claimedTiles[claimedTiles.findIndex(findOwner)].rightScore = tileFlipCache.score
     }
-}
+} //Tiles and placement
 
-function checkZones(board, x, y, type) {
-    if (checkValid(x, y) === false) {
-        return sizeCounter
+function calculateScoringZones(board, x, y, type) {
+    if (checkForValidBoardPositio(x, y) === false) {
+        return scoringZoneSizeCounter
     }
-    if (checkMatching(board, x, y, type) === false) {
-        return sizeCounter
+    if (checkForMatchingTiles(board, x, y, type) === false) {
+        return scoringZoneSizeCounter
     }
-    setCounted(board, x ,y)
-    checkZones(board, x + 1, y, type)
-    checkZones(board, x - 1, y, type)
-    checkZones(board, x , y + 1, type)
-    checkZones(board, x , y - 1, type)
-}
+    setTileToCounted(board, x ,y)
+    calculateScoringZones(board, x + 1, y, type)
+    calculateScoringZones(board, x - 1, y, type)
+    calculateScoringZones(board, x , y + 1, type)
+    calculateScoringZones(board, x , y - 1, type)
+} //Endgame
 
-function setCounted (board, x, y) {
+function setTileToCounted (board, x, y) {
     board[y][x][0] = `d`
-    sizeCounter ++
-    multiCounter += board[y][x][1]
-}
+    scoringZoneSizeCounter ++
+    scoringZoneMultiplierCounter += board[y][x][1]
+} //Endgame
 
-function checkMatching (board, x, y, type) {
-    if (board[y][x][0] === type){
-        return true
-    } else {
-        return false
-    }
-}
+function checkForMatchingTiles (board, x, y, type) {
+    return board[y][x][0] === type
+} //Endgame
 
-function checkValid (x, y) {
-    if (x >= 0 && x <= 4 && y >= 0 && y <= 4) {
-        return true
-    } else {
-        return false
-    }
-}
+function checkForValidBoardPositio (x, y) {
+    return x >= 0 && x <= 4 && y >= 0 && y <= 4
+}//Endgame
 
 function findValidTarget(board, targetList) {
-    let target = ``
+    let target
     board.forEach((row) => { 
         row.forEach((sqr) => {
-            if (
-                sqr[0] === targetList[0] ||
-                sqr[0] === targetList[1] ||
-                sqr[0] === targetList[2] ||
-                sqr[0] === targetList[3] ||
-                sqr[0] === targetList[4] ||
-                sqr[0] === targetList[5]
-            ) { 
-                target = sqr[0]
-            }
+            targetList.includes(`${sqr[0]}`) ? target = sqr[0] : target = ``
         })
     })
     return target
-}
+} //Endgame
 
-function generateResults(board) {
-    results = []
+function generateScoringArray(board) {
+    scoringArray = []
     while (findValidTarget(board, tileTypes) !== ``) {
     board.forEach((row, i) => {
         row.forEach((sqr, k) => {
-            checkZones(board, i, k, findValidTarget(board, tileTypes))
-            if (sizeCounter !== 0) {
-                results.push({
-                    size: sizeCounter,
-                    multi: multiCounter
+            calculateScoringZones(board, i, k, findValidTarget(board, tileTypes))
+            if (scoringZoneSizeCounter !== 0) {
+                scoringArray.push({
+                    size: scoringZoneSizeCounter,
+                    multi: scoringZoneMultiplierCounter
             })
-                sizeCounter = 0
-                multiCounter = 0
+                scoringZoneSizeCounter = 0
+                scoringZoneMultiplierCounter = 0
             }
         })
     })
     }
-}
+} //Endgame
 
-function translateBoard(board) {
+function translateBoardToTwoDimensions(board) {
     let twoDBoard = [
         [],
         [],
@@ -263,24 +248,24 @@ function translateBoard(board) {
         }
     })
     return twoDBoard
-}
+} //Utility
 
 function makeDeck() {
     deck = structuredClone(tiles)
     shuffleDeck() 
-}
+} //Init
 
 function shuffleDeck() {
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-}
+} //Init
 
 function chooseStartPlayer() {
     gameState.currentPlayer = Math.floor(Math.random()*gameState.playerCount)
     gameState.playersActed = 0
-}
+} //Init
 
 function updateTileSelector() {
     if (gameState.round > 1) {
@@ -290,7 +275,7 @@ function updateTileSelector() {
     availableTiles.splice(0, 4)
     availableTiles.push(deck[0], deck[1], deck[2], deck[3])
     sortTiles(availableTiles)
-}
+} //Tiles and placement
 
 function clearPlayerBoards() {
     players.forEach((player) => {
@@ -322,17 +307,17 @@ function clearPlayerBoards() {
             [``, 0],
         ]
     })
-}
+} //Players and boards
 
 function sortTiles(array) {
     array.sort((a, b) => {
         return a.id-b.id
         })
-}
+} //Tiles and placement
 
 function reduceDeck() {
     deck.splice(0, 4)
-}
+} //Tiles and placement
 
 function renderBoard() {
     players[gameState.currentPlayer].board.forEach((sqr, i) => {
@@ -340,12 +325,12 @@ function renderBoard() {
         boardSquareEls[i].classList += ` ${sqr[0]}`
         boardSquareEls[i].textContent = `${sqr[1]}`
     })
-}
+} //Rendering
 
 function renderMessages() {
     messageEl.textContent = message
     playerEl.textContent = `It is player ${gameState.currentPlayer+1}'s turn`
-}
+} //Rendering
 
 function renderTileSelector() {
     availableTiles.forEach((sqr, i) => {
@@ -367,7 +352,7 @@ function renderTileSelector() {
             tileSquareEls[i*2+1].textContent = ``
         }
     })
-}
+} //Rendering
 
 function renderCurrentTile() {
     if (gameState.phase === `placement`) {
@@ -383,7 +368,7 @@ function renderCurrentTile() {
     } else {         
         currentTileEl.classList += ` hidden`
     }
-}
+} //Rendering
 
 function resetGameState() {
     playerEl.classList = `player`
@@ -396,19 +381,19 @@ function resetGameState() {
     gameState.phase = `selection`
     availableTiles = []
     claimedTiles = []
-    sizeCounter = 0
-    multiCounter = 0
-    results = []
+    scoringZoneSizeCounter = 0
+    scoringZoneMultiplierCounter = 0
+    scoringArray = []
     clearPlayerBoards()
     players.forEach((player) => player.score = 0)
-}
+} //Init
 
 function render() {
     renderBoard()
     renderMessages()
     renderTileSelector()
     renderCurrentTile()
-}
+} //Rendering
 
 function init() {
     resetGameState()
@@ -417,13 +402,13 @@ function init() {
     updateTileSelector()
     reduceDeck()
     render()
-}
+} //Init
 
 function calculateScores(array, player) {
     array.forEach((zone) => {
         player.score += zone.size * zone.multi
     })
-}
+} //Endgame
 
 function checkEndGame() {
     if (deck.length === 0) {
@@ -433,14 +418,13 @@ function checkEndGame() {
             gameState.isPenultimateRound = true
         }
     }
-}
+} //Endgame
 
 function endRound() {
     if (gameState.isEndGame === true) {
         players.forEach((player) => {
-            generateResults(translateBoard(player.board))
-            calculateScores(results, player)
-            results = []
+            generateScoringArray(translateBoardToTwoDimensions(player.board))
+            calculateScores(scoringArray, player)
         })
         checkWinner()
         gameState.isGameOver = true
@@ -462,7 +446,7 @@ function endRound() {
         gameState.phase = `placement`
         message = `Please chose where to place your tile.`    
     }
-}
+} //Midgame
 
 function claimTile(player, tile) {
         gameState.playersActed ++
@@ -481,10 +465,10 @@ function claimTile(player, tile) {
     if (gameState.playersActed === gameState.playerCount) {
         endRound()
      }
-}
+} //Tiles and placement
 
 function validateUp(sqr) {
-    if (gameState.vert === false) {
+    if (gameState.verticalTile === false) {
         if (
             players[gameState.currentPlayer].board[sqr - 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -493,7 +477,7 @@ function validateUp(sqr) {
         ) {
             return true
         }
-    } else if (gameState.vert === true) {
+    } else if (gameState.verticalTile === true) {
         if (
             players[gameState.currentPlayer].board[sqr - 10][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
             players[gameState.currentPlayer].board[sqr - 10][0] === `h`
@@ -503,10 +487,10 @@ function validateUp(sqr) {
     } else {
         return false
     }
-}
+} //Tiles and placement
 
 function validateDown(sqr) {
-    if (gameState.vert === false) {
+    if (gameState.verticalTile === false) {
         if (
             players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr + 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -516,7 +500,7 @@ function validateDown(sqr) {
             return true
         } 
         
-    } else if (gameState.vert === true) {
+    } else if (gameState.verticalTile === true) {
         if (
             players[gameState.currentPlayer].board[sqr + 5][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr + 5][0] === `h`
@@ -526,10 +510,10 @@ function validateDown(sqr) {
     } else {
         return false
     }
-}
+} //Tiles and placement
 
 function validateLeft(sqr) {
-    if (gameState.vert === false) {
+    if (gameState.verticalTile === false) {
 
         if (
             players[gameState.currentPlayer].board[sqr - 2][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -537,7 +521,7 @@ function validateLeft(sqr) {
         ) {
             return true
         }
-    } else if (gameState.vert === true) {
+    } else if (gameState.verticalTile === true) {
         if (
             players[gameState.currentPlayer].board[sqr - 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr - 6][0] === claimedTiles[claimedTiles.findIndex(findOwner)].lefttMap ||
@@ -549,17 +533,17 @@ function validateLeft(sqr) {
     } else {
         return false
     }
-}
+} //Tiles and placement
 
 function validateRight(sqr) {
-    if (gameState.vert === false) {
+    if (gameState.verticalTile === false) {
         if (
             players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr + 1][0] === `h`
         ) {
             return true
         }
-    } else if (gameState.vert === true) {
+    } else if (gameState.verticalTile === true) {
         if (
             players[gameState.currentPlayer].board[sqr + 1][0] === claimedTiles[claimedTiles.findIndex(findOwner)].rightMap ||
             players[gameState.currentPlayer].board[sqr - 4][0] === claimedTiles[claimedTiles.findIndex(findOwner)].leftMap ||
@@ -571,16 +555,16 @@ function validateRight(sqr) {
     } else {
         return false
     }
-}
+} //Tiles and placement
 
 function checkValidPlacement(sqr) {
     if (
-        gameState.valSquares.forbiddenSquares.includes(sqr) ||
+        gameState.validationSquares.forbiddenSquares.includes(sqr) ||
         players[gameState.currentPlayer].board[sqr][0] !== `` ||
-        players[gameState.currentPlayer].board[sqr - gameState.placementMod][0] !== ``
+        players[gameState.currentPlayer].board[sqr - gameState.tilePlacementModifier][0] !== ``
     ) {
         return false
-    } else if (gameState.valSquares.allSquares.includes(sqr)) {
+    } else if (gameState.validationSquares.allSquares.includes(sqr)) {
         if (
             validateUp(sqr) ||
             validateDown(sqr) ||
@@ -591,7 +575,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.drSquare.includes(sqr)) {
+    } else if (gameState.validationSquares.drSquare.includes(sqr)) {
         if (
             validateDown(sqr) ||
             validateRight(sqr)
@@ -600,7 +584,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.ldSquare.includes(sqr)) {
+    } else if (gameState.validationSquares.ldSquare.includes(sqr)) {
         if (
             validateDown(sqr) ||
             validateLeft(sqr)
@@ -609,7 +593,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.urSquare.includes(sqr)) {
+    } else if (gameState.validationSquares.urSquare.includes(sqr)) {
         if (
             validateUp(sqr) ||
             validateRight(sqr)
@@ -618,7 +602,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.luSquare.includes(sqr)) {
+    } else if (gameState.validationSquares.luSquare.includes(sqr)) {
         if (
             validateUp(sqr) ||
             validateLeft(sqr)
@@ -627,7 +611,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.udrSquares.includes(sqr)) {
+    } else if (gameState.validationSquares.udrSquares.includes(sqr)) {
         if (
             validateUp(sqr) || 
             validateDown(sqr) || 
@@ -637,7 +621,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.udlSquares.includes(sqr)) {
+    } else if (gameState.validationSquares.udlSquares.includes(sqr)) {
        if (
             validateUp(sqr) ||
             validateDown(sqr) ||
@@ -647,7 +631,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.ldrSquares.includes(sqr)) {
+    } else if (gameState.validationSquares.ldrSquares.includes(sqr)) {
         if (
             validateRight(sqr) ||
             validateDown(sqr) ||
@@ -657,7 +641,7 @@ function checkValidPlacement(sqr) {
         } else {
             return false
         }
-    } else if (gameState.valSquares.lurSquares.includes(sqr)) {
+    } else if (gameState.validationSquares.lurSquares.includes(sqr)) {
         if (
             validateRight(sqr) ||
             validateUp(sqr) ||
@@ -668,11 +652,11 @@ function checkValidPlacement(sqr) {
             return false
         }
     }
-}
+} //Tiles and placement
 
 function findOwner(tile,) {
     return tile[`owner`] === gameState.currentPlayer
-}
+} //Utilities
 
 function placeTile(tile, id, mod) {
     players[gameState.currentPlayer].board[tile] = [claimedTiles[id].rightMap, claimedTiles[id].rightScore]
@@ -691,7 +675,7 @@ function placeTile(tile, id, mod) {
                 endRound()            
         }
     }
-}
+}  //Tiles and placement
 
 function discardTile() {
     if (gameState.isEndGame === false) {
@@ -708,7 +692,7 @@ function discardTile() {
                 endRound()            
         }
     }
-}
+}  //Tiles and placement
     
 function checkWinner() {
     players.forEach((player) => {
@@ -720,7 +704,7 @@ function checkWinner() {
             gameState.winner.push(player.id)
         }
     }) 
-}
+} //Endgame
 
 function handleClick (e) {
     if (e.target.classList.contains(`rules-button`)) {
@@ -742,13 +726,16 @@ function handleClick (e) {
         }
     } else if (gameState.phase === `placement` && e.target.classList.contains(`sqr`)) {
         if (checkValidPlacement(Number(e.target.id)) === true) {
-            placeTile(Number(e.target.id), claimedTiles.findIndex(findOwner), gameState.placementMod)
+            placeTile(Number(e.target.id), claimedTiles.findIndex(findOwner), gameState.tilePlacementModifier)
         } else {
             message = `That tile placement is not legal. Please choose another location.`
         }
     }
     render()
 }
+//REVIEW - Move as many functions as is logical into the game object
+//REVIEW - Create multiple files to make code more readable
+//REVIEW - Investigate elimination of as many magic numbers as possible
 
 // -----Game Start-----
 init()
